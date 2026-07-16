@@ -14,16 +14,18 @@ export default function StartOverlay() {
   return (
     <div className="start-overlay">
       <div className="start-content">
-        <h1 className="start-title">驾考保卫战</h1>
+        <h1 className="start-title">👾宝可驾🚗</h1>
         <p className="start-sub">
-          选择题库中的驾照考试题，击败野怪！<br />
-          每答对一题可攻击一次，连续答对触发连击加成！
+          ⚡ 上阵宝可梦: {getPkmName(activePokemon)}<br />
+          <span style={{ fontSize: '14px' }}>答对题目发射子弹 · 击败宝可梦解锁收集！</span>
         </p>
-        <p className="start-pokemon">
-          当前出战：{getPkmName(activePokemon)}
-        </p>
+        <div className="start-features">
+          <span className="start-feature">📖 全图鉴收集</span>
+          <span className="start-feature">🎰 抽奖系统</span>
+          <span className="start-feature">🔥 连击系统</span>
+        </div>
         <button className="start-btn" onClick={startGame}>
-          开始战斗！
+          🎮 开始冒险
         </button>
       </div>
     </div>

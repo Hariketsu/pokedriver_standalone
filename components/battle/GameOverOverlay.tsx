@@ -18,29 +18,18 @@ export default function GameOverOverlay() {
     : 0;
 
   return (
-    <div className="game-over-overlay show">
+    <div id="game-over" className="game-over-overlay show">
       <div className="go-content">
-        <h2 className="go-title">游戏结束</h2>
+        <h2 className="go-title">💀 考砸了</h2>
 
         <div className="go-stats">
-          <div className="go-stat-row">
-            <span className="go-stat-label">最终得分</span>
-            <span className="go-stat-value">{score}</span>
-          </div>
-          <div className="go-stat-row">
-            <span className="go-stat-label">正确率</span>
-            <span className="go-stat-value">
-              {totalCorrect}/{totalAnswered} ({accuracy}%)
-            </span>
-          </div>
-          <div className="go-stat-row">
-            <span className="go-stat-label">最大连击</span>
-            <span className="go-stat-value">{maxCombo}</span>
-          </div>
+          ⭐ <span id="go-score" style={{ color: 'var(--cyan)', fontWeight: 700 }}>{score}</span><br/>
+          ✅ 正确率: <span id="go-rate" style={{ color: 'var(--cyan)', fontWeight: 700 }}>{accuracy}%</span><br/>
+          🔥 最大连击: <span id="go-combo" style={{ color: 'var(--cyan)', fontWeight: 700 }}>{maxCombo}</span>
         </div>
 
         <button className="restart-btn" onClick={restartGame}>
-          重新开始
+          🔄 重新考试
         </button>
       </div>
     </div>

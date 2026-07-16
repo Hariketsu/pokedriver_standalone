@@ -12,22 +12,7 @@ export default function DefenseLine() {
     <div className="defense-line">
       <div className="license-icon">
         {iconError ? (
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: '50%',
-              backgroundColor: pkmFallbackColor(activePokemon),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontWeight: 'bold',
-              fontSize: 24,
-            }}
-          >
-            {getPkmName(activePokemon).charAt(0)}
-          </div>
+          <div className="fallback-text">{getPkmName(activePokemon).charAt(0)}</div>
         ) : (
           <img
             src={getPkmIcon(activePokemon)}

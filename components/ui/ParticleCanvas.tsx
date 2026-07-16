@@ -4,6 +4,19 @@ import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 
 import { useGameStore } from '@/lib/store';
 
 // ============================================================
+// Module-level spawnExplosion holder — set by the component,
+// consumed globally (e.g. by GameArea skill activation).
+// ============================================================
+
+type SpawnExplosionFn = (x: number, y: number, color?: string, count?: number) => void;
+let _spawnExplosion: SpawnExplosionFn | null = null;
+
+/** Returns the current spawnExplosion function (null if ParticleCanvas is not mounted). */
+export function getSpawnExplosion(): SpawnExplosionFn | null {
+  return _spawnExplosion;
+}
+
+// ============================================================
 // Types
 // ============================================================
 
@@ -113,6 +126,12 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle>(function ParticleCanvas(
 
   useImperativeHandle(ref, () => ({ spawnExplosion }), [spawnExplosion]);
 
+  // ---- Publish globally so GameArea can call it on skill activation ----
+  useEffect(() => {
+    _spawnExplosion = spawnExplosion;
+    return () => { _spawnExplosion = null; };
+  }, [spawnExplosion]);
+
   // ----------------------------------------------------------
   // Render loop
   // ----------------------------------------------------------
@@ -215,13 +234,8 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle>(function ParticleCanvas(
 
   return (
     <canvas
+      id="game-canvas"
       ref={canvasRef}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: 'none',
-      }}
     />
   );
 });

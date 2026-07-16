@@ -39,7 +39,7 @@ export function spawnMonster(): MonsterState | null {
   }
 
   const speedLevel = state.speedLevel;
-  const boostedSpeed = getPkmSpeed(chosen) * (1 + (speedLevel - 1) * 0.5);
+  const boostedSpeed = getPkmSpeed(chosen) * (1 + (speedLevel - 1) * 0.35);
   const hp = Math.min(Math.ceil(getPkmHP(chosen) + (speedLevel - 1) * 0.5), 10);
 
   let color: string;

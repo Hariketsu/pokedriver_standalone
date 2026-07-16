@@ -34,7 +34,7 @@ export default function PokemonCard({ pkm, unlocked, kills, isActive, onSelect }
     <div className={classNames} onClick={handleClick}>
       <span className="pkm-id">#{pkm.id}</span>
 
-      {unlocked && isActive && <span className="pkm-using">使用中</span>}
+      {unlocked && isActive && <span className="pkm-using">⚡</span>}
 
       {tier && (
         <span className={`pkm-tier-badge ${tier.cls}`}>

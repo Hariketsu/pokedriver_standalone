@@ -27,7 +27,7 @@ export default function GachaButton() {
       disabled={gold < 200}
       onClick={handleClick}
     >
-      🎰 抽卡 (200g)
+      🎰 抽奖 200💰
     </button>
   );
 }

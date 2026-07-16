@@ -62,7 +62,11 @@ export default function Home() {
         useGameStore.setState({ bestScore: parseInt(savedBest) || 0 });
       }
 
-      const savedBank = localStorage.getItem('drivingDefenseImportedBank');
+      let savedBank: string | null = null;
+      try {
+        savedBank = localStorage.getItem('drivingDefenseImportedBank');
+      } catch { /* ignore */ }
+
       if (savedBank) {
         try {
           const parsed = JSON.parse(savedBank);
@@ -83,13 +87,39 @@ export default function Home() {
       /* ignore localStorage errors */
     }
 
+    // If no localStorage bank, try fetching external question bank
+    const savedBank = (() => { try { return localStorage.getItem('drivingDefenseImportedBank'); } catch { return null; } })();
+    if (!savedBank) {
+      fetch(`questions_bank.json?t=${Date.now()}`)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          if (Array.isArray(data) && data.length > 0) {
+            const questions = data.map((q: any, i: number) => ({
+              id: q.id || 'ext_' + i,
+              q: q.q || q.question || '',
+              opts: q.opts || q.options || [],
+              ans: typeof q.ans === 'number' ? q.ans : q.answer ?? 0,
+            }));
+            useGameStore.getState().importQuestions(questions);
+          }
+        })
+        .catch(() => {
+          /* fetch failed — fall through to BUILTIN_QUESTIONS below */
+        });
+    }
+
     // Initialize daily stats
     useGameStore.getState().loadDailyBase();
   }, []);
 
   // ==========================================================
   // Load builtin questions on first visit (store persist may
-  // have saved allQuestions, but questions queue is not persisted)
+  // have saved allQuestions, but questions queue is not persisted).
+  // This acts as the fallback when neither localStorage nor the
+  // external questions_bank.json provided any questions.
   // ==========================================================
 
   useEffect(() => {

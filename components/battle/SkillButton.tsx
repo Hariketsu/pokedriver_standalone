@@ -25,25 +25,17 @@ export default function SkillButton({ onActivate }: SkillButtonProps) {
       id="skill-btn"
       className={isReady ? 'ready' : ''}
       onClick={handleClick}
-      style={{
-        position: 'absolute',
-        right: 4,
-        top: '50%',
-        transform: 'translateY(-50%)',
-        width: 48,
-        height: 48,
-        borderRadius: '50%',
-        cursor: isReady ? 'pointer' : 'default',
-      }}
+      title="必杀技"
     >
-      <span className="skill-emoji">💥</span>
+      ⚡
       <div className="charge-bar">
         <div
+          id="skill-charge-fill"
           className="charge-fill"
           style={{ width: `${chargePercent}%` }}
         />
       </div>
-      <span className="charge-text">{chargePercent}%</span>
+      <span id="skill-charge-text" className="charge-text">{chargePercent}%</span>
     </button>
   );
 }

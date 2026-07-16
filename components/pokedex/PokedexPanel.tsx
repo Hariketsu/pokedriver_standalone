@@ -33,7 +33,7 @@ export default function PokedexPanel() {
     <div className="pokedex-area active">
       <div className="pokedex-header">
         <div className="info">
-          已解锁: <span>{unlockedCount}</span>/{totalCount}
+          📖 图鉴 · 已解锁 {unlockedCount}/{totalCount}
         </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <button

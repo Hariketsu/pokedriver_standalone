@@ -124,7 +124,7 @@ export interface GameState {
 
   // Skills
   addSkillCharge: (amount: number) => void;
-  activateSkill: () => boolean;
+  activateSkill: (cleared: number) => boolean;
 
   // UI
   setActiveTab: (tab: 'battle' | 'bank' | 'pokedex') => void;
@@ -477,10 +477,10 @@ export const useGameStore = create<GameState>()(
         set(s => ({ skillCharge: Math.min(s.skillMax, s.skillCharge + amount) }));
       },
 
-      activateSkill: () => {
+      activateSkill: (cleared) => {
         const s = get();
         if (s.skillCharge < s.skillMax) return false;
-        set({ skillCharge: 0, score: s.score + 10, monsters: [] });
+        set({ skillCharge: 0, score: s.score + cleared * 20, monsters: [] });
         return true;
       },
 
@@ -592,6 +592,7 @@ export const useGameStore = create<GameState>()(
           if (s.score > prev) {
             localStorage.setItem('drivingDefenseBest', String(s.score));
             set({ bestScore: s.score });
+            get().showToast("🏆 新纪录！" + s.score);
           }
         } catch { /* ignore */ }
       },

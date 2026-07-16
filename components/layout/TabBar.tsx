@@ -6,7 +6,7 @@ export default function TabBar() {
   const setActiveTab = useGameStore(s => s.setActiveTab);
 
   const tabs = [
-    { key: 'battle' as const, label: '⚔️ 战斗' },
+    { key: 'battle' as const, label: '⚔️ 闯关' },
     { key: 'bank' as const, label: '📚 题库' },
     { key: 'pokedex' as const, label: '📖 图鉴' },
   ];

@@ -12,6 +12,7 @@ export default function UpgradePanel() {
   const getHPCost = useGameStore((s) => s.getHPCost);
   const upgradeBullet = useGameStore((s) => s.upgradeBullet);
   const upgradeHP = useGameStore((s) => s.upgradeHP);
+  const doGacha = useGameStore((s) => s.doGacha);
   const showToast = useGameStore((s) => s.showToast);
 
   const bulletCost = getBulletCost();
@@ -19,6 +20,7 @@ export default function UpgradePanel() {
 
   const canAffordBullet = gold >= bulletCost && bulletLevel < MAX_UPGRADE_LEVEL;
   const canAffordHP = gold >= hpCost && hpLevel < MAX_UPGRADE_LEVEL;
+  const canGacha = gold >= 200;
 
   const handleBulletUpgrade = () => {
     if (!upgradeBullet()) {
@@ -40,34 +42,57 @@ export default function UpgradePanel() {
     }
   };
 
+  const handleGacha = () => {
+    const result = doGacha();
+    if (!result) {
+      if (gold < 200) {
+        showToast('金币不足！');
+      } else {
+        showToast('所有宝可梦已解锁！');
+      }
+    } else {
+      showToast(`🎉 抽到 ${result.name}（${result.rarity}）！`);
+    }
+  };
+
   return (
     <div className="upgrade-panel">
-      <div className="upgrade-row upgrade-gold">
-        <span>🪙 {gold}</span>
-      </div>
+      <div className="upgrade-row">
+        <span>💰 {gold}</span>
 
-      <div className="upgrade-row upgrade-btns">
-        <button
-          className={`upgrade-btn-sm ${!canAffordBullet && bulletLevel < MAX_UPGRADE_LEVEL ? 'disabled' : ''}`}
-          onClick={handleBulletUpgrade}
-          disabled={!canAffordBullet && bulletLevel < MAX_UPGRADE_LEVEL}
-        >
-          <span className="lbl">🔫 伤害 Lv.{bulletLevel}</span>
-          <span className="cost">
-            {bulletLevel >= MAX_UPGRADE_LEVEL ? 'MAX' : `${bulletCost}🪙`}
-          </span>
-        </button>
+        <div className="upgrade-btns">
+          <button
+            className={`upgrade-btn-sm ${!canAffordBullet && bulletLevel < MAX_UPGRADE_LEVEL ? 'disabled' : ''}`}
+            onClick={handleBulletUpgrade}
+            disabled={!canAffordBullet && bulletLevel < MAX_UPGRADE_LEVEL}
+          >
+            <span className="lbl">🔫 伤害 Lv.{bulletLevel}</span>
+            <span className="cost">
+              {bulletLevel >= MAX_UPGRADE_LEVEL ? 'MAX' : `${bulletCost}g`}
+            </span>
+          </button>
 
-        <button
-          className={`upgrade-btn-sm ${!canAffordHP && hpLevel < MAX_UPGRADE_LEVEL ? 'disabled' : ''}`}
-          onClick={handleHPUpgrade}
-          disabled={!canAffordHP && hpLevel < MAX_UPGRADE_LEVEL}
-        >
-          <span className="lbl">❤️ 生命 Lv.{hpLevel}</span>
-          <span className="cost">
-            {hpLevel >= MAX_UPGRADE_LEVEL ? 'MAX' : `${hpCost}🪙`}
-          </span>
-        </button>
+          <button
+            className={`upgrade-btn-sm ${!canAffordHP && hpLevel < MAX_UPGRADE_LEVEL ? 'disabled' : ''}`}
+            onClick={handleHPUpgrade}
+            disabled={!canAffordHP && hpLevel < MAX_UPGRADE_LEVEL}
+          >
+            <span className="lbl">❤️ 生命 Lv.{hpLevel}</span>
+            <span className="cost">
+              {hpLevel >= MAX_UPGRADE_LEVEL ? 'MAX' : `${hpCost}g`}
+            </span>
+          </button>
+
+          <button
+            id="gacha-quick-btn"
+            className={`upgrade-btn-sm ${!canGacha ? 'disabled' : ''}`}
+            onClick={handleGacha}
+            disabled={!canGacha}
+          >
+            <span className="lbl">🎰 抽奖</span>
+            <span className="cost">200g</span>
+          </button>
+        </div>
       </div>
     </div>
   );

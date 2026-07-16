@@ -9,6 +9,7 @@ import Monster from './Monster';
 import DefenseLine from './DefenseLine';
 import SkillButton from './SkillButton';
 import ComboNotify from './ComboNotify';
+import { getSpawnExplosion } from '@/components/ui/ParticleCanvas';
 
 // ============================================================
 // Helpers
@@ -54,6 +55,7 @@ const GameArea = forwardRef<GameAreaHandle, GameAreaProps>(function GameArea({ c
   const animFrameRef = useRef(0);
   const spawnTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const gameLoopTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const areaRef = useRef<HTMLDivElement>(null);
 
   // ---- Local UI state ----
   const [comboText, setComboText] = useState<string | null>(null);
@@ -234,6 +236,18 @@ const GameArea = forwardRef<GameAreaHandle, GameAreaProps>(function GameArea({ c
 
     if (newHp <= 0) {
       // ---- Monster killed ----
+
+      // Spawn explosion particles before removing the DOM element
+      if (el) {
+        const r = el.getBoundingClientRect();
+        const ar = areaRef.current?.getBoundingClientRect();
+        if (ar) {
+          const cx = r.left - ar.left + r.width / 2;
+          const cy = r.top - ar.top + r.height / 2;
+          getSpawnExplosion()?.(cx, cy, closest.color, 20);
+        }
+      }
+
       store.removeMonster(closest.id);
 
       // Remove DOM element immediately
@@ -266,15 +280,56 @@ const GameArea = forwardRef<GameAreaHandle, GameAreaProps>(function GameArea({ c
   const handleSkillActivate = useCallback(() => {
     const store = useGameStore.getState();
 
+    // Capture alive monsters BEFORE activateSkill clears them from the store.
+    const aliveMonsters = store.monsters.filter(m => !m.dead && !m.reached);
+    const cleared = aliveMonsters.length;
+
     // activateSkill returns false if not fully charged (SkillButton already
     // gates on this, but we double-check for safety).
-    if (!store.activateSkill()) return;
+    if (!store.activateSkill(cleared)) return;
 
+    // 1. Screen flash
     setFlash(true);
     setTimeout(() => setFlash(false), 300);
 
+    // 2. Spawn 3 explosions (gold, magenta, cyan) at each monster's center
+    const spawnFn = getSpawnExplosion();
+    if (spawnFn) {
+      for (const m of aliveMonsters) {
+        const el = getMonsterEl(m.id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        spawnFn(cx, cy, '#FFD700', 12); // gold
+        spawnFn(cx, cy, '#FF00FF', 12); // magenta
+        spawnFn(cx, cy, '#00FFFF', 12); // cyan
+      }
+    }
+
     // Remove monster DOM elements immediately so they don't outlive the flash
     clearMonsterDOM();
+
+    // 3. Screen shake — sequenced translate offsets, reset after 200ms
+    const areaEl = areaRef.current;
+    if (areaEl) {
+      const offsets = [
+        'translate(-6px, 0)',
+        'translate(6px, 0)',
+        'translate(0, -6px)',
+        'translate(0, 6px)',
+      ];
+      offsets.forEach((offset, i) => {
+        setTimeout(() => {
+          areaEl.style.transform = offset;
+        }, i * 50);
+      });
+      setTimeout(() => {
+        areaEl.style.transform = 'none';
+      }, 200);
+    }
+
+    // 4 & 5: Score (cleared * 20) and monster store clear handled by activateSkill() above
 
     store.showToast('💥 全屏清除！');
   }, []);
@@ -357,15 +412,23 @@ const GameArea = forwardRef<GameAreaHandle, GameAreaProps>(function GameArea({ c
   // ==========================================================
 
   return (
-    <div id="game-area" className="game-area">
+    <div id="game-area" className="game-area" ref={areaRef}>
       <MonsterLane laneRef={laneRef}>
-        {monsters.map(m => (
-          <Monster
-            key={m.id}
-            monster={m}
-            laneHeight={laneRef.current?.clientHeight ?? 300}
-          />
-        ))}
+        {(() => {
+          const aliveIdx = new Map<number, number>();
+          monsters
+            .filter(m => !m.dead && !m.reached)
+            .forEach((m, i) => aliveIdx.set(m.id, i % 5));
+
+          return monsters.map(m => (
+            <Monster
+              key={m.id}
+              monster={m}
+              positionIndex={aliveIdx.get(m.id) ?? 0}
+              laneHeight={laneRef.current?.clientHeight ?? 300}
+            />
+          ));
+        })()}
       </MonsterLane>
 
       <DefenseLine />

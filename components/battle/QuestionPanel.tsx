@@ -8,8 +8,6 @@ interface QuestionPanelProps {
   onComboNotify: (text: string) => void;
 }
 
-const OPTION_LABELS = ['A', 'B', 'C', 'D'];
-
 export default function QuestionPanel({ onShoot, onComboNotify }: QuestionPanelProps) {
   const currentQ = useGameStore((s) => s.currentQ);
   const totalAnswered = useGameStore((s) => s.totalAnswered);
@@ -22,7 +20,7 @@ export default function QuestionPanel({ onShoot, onComboNotify }: QuestionPanelP
   if (!currentQ) {
     return (
       <div className="question-area">
-        <p className="q-text">正在加载题目...</p>
+        <p className="q-text">加载题目中...</p>
       </div>
     );
   }
@@ -74,7 +72,7 @@ export default function QuestionPanel({ onShoot, onComboNotify }: QuestionPanelP
             onClick={() => onOptionClick(i)}
             disabled={answered}
           >
-            {OPTION_LABELS[i]}. {opt}
+            {opt}
           </button>
         ))}
       </div>

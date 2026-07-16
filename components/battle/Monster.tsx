@@ -7,9 +7,10 @@ import { getPkmIcon, pkmFallbackColor } from '@/lib/pokemon';
 interface MonsterProps {
   monster: MonsterState;
   laneHeight: number;
+  positionIndex?: number;
 }
 
-export default function Monster({ monster, laneHeight }: MonsterProps) {
+export default function Monster({ monster, laneHeight, positionIndex = 0 }: MonsterProps) {
   const [iconError, setIconError] = useState(false);
 
   const hpPercent = monster.maxHp > 0
@@ -28,18 +29,18 @@ export default function Monster({ monster, laneHeight }: MonsterProps) {
     <div
       className={classNames}
       style={{
-        left: `${30 + (monster.id % 3) * 25}%`,
+        left: `${5 + positionIndex * 18}%`,
         top: monster.y,
       }}
       data-monster-id={monster.id}
     >
       {iconError ? (
         <div
-          className="monster-fallback"
+          className="m-img-fallback"
           style={{
             backgroundColor: pkmFallbackColor(monster.pkmId),
-            width: 48,
-            height: 48,
+            width: 50,
+            height: 50,
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
@@ -55,8 +56,8 @@ export default function Monster({ monster, laneHeight }: MonsterProps) {
         <img
           src={getPkmIcon(monster.pkmId)}
           alt={monster.name}
-          width={48}
-          height={48}
+          width={50}
+          height={50}
           onError={() => setIconError(true)}
         />
       )}

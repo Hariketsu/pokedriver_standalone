@@ -51,7 +51,7 @@ export default function QuestionBank() {
       <div className="bank-search">
         <input
           type="text"
-          placeholder="搜索题目..."
+          placeholder="🔍 搜索题目..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -100,13 +100,13 @@ export default function QuestionBank() {
 
       <div className="bank-pagination">
         <button disabled={safePage <= 1} onClick={handlePrev}>
-          上一页
+          ◀
         </button>
         <span className="page-info">
           第 {safePage}/{totalPages} 页
         </span>
         <button disabled={safePage >= totalPages} onClick={handleNext}>
-          下一页
+          ▶
         </button>
       </div>
     </div>

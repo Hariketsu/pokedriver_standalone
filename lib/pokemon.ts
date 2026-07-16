@@ -73,5 +73,5 @@ export function getPkmSpawnWeight(p: { id: number; r: string }): number {
 }
 
 export function getAllPokemon() {
-  return PKM;
+  return POKEMON_DATA;
 }
