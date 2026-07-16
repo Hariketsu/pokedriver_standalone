@@ -38,22 +38,16 @@ export default function Monster({ monster, laneHeight, positionIndex = 0 }: Mons
         <div
           className="m-img-fallback"
           style={{
-            backgroundColor: pkmFallbackColor(monster.pkmId),
-            width: 50,
-            height: 50,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: 20,
+            backgroundColor: pkmFallbackColor(monster.pkmId) + '33',
+            color: pkmFallbackColor(monster.pkmId),
+            border: '2px solid ' + pkmFallbackColor(monster.pkmId),
           }}
         >
           {monster.name.charAt(0)}
         </div>
       ) : (
         <img
+          className="m-img"
           src={getPkmIcon(monster.pkmId)}
           alt={monster.name}
           width={50}
@@ -65,7 +59,10 @@ export default function Monster({ monster, laneHeight, positionIndex = 0 }: Mons
       <div className="m-hp-wrapper">
         <div
           className="m-hp-fill"
-          style={{ width: `${hpPercent}%` }}
+          style={{
+            width: `${hpPercent}%`,
+            backgroundColor: monster.color,
+          }}
         />
       </div>
     </div>

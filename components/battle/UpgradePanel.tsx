@@ -58,7 +58,7 @@ export default function UpgradePanel() {
   return (
     <div className="upgrade-panel">
       <div className="upgrade-row">
-        <span>💰 {gold}</span>
+        <span className="upgrade-gold">💰 {gold}</span>
 
         <div className="upgrade-btns">
           <button

@@ -45,7 +45,11 @@ export default function PokemonCard({ pkm, unlocked, kills, isActive, onSelect }
       {iconError ? (
         <div
           className="pkm-img-fallback"
-          style={{ backgroundColor: pkmFallbackColor(pkm.id) }}
+          style={{
+            backgroundColor: pkmFallbackColor(pkm.id) + '33',
+            color: pkmFallbackColor(pkm.id),
+            border: '2px solid ' + pkmFallbackColor(pkm.id),
+          }}
         >
           {pkm.c.charAt(0)}
         </div>

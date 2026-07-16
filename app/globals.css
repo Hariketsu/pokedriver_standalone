@@ -31,6 +31,7 @@ padding-top:var(--sat);padding-bottom:var(--sab);padding-left:var(--sal);padding
 .header .stats .stat .val.hp-ok{color:var(--green)}
 .header .stats .stat .val.hp-warn{color:var(--gold)}
 .header .stats .stat .val.hp-danger{color:var(--red)}
+.header .stats .stat .val.combo-fire{color:#ff8800;text-shadow:0 0 8px rgba(255,136,0,0.6)}
 .game-area{position:relative;margin:6px 0;border-radius:14px;overflow:hidden;background:var(--bg2);border:1px solid var(--border);flex:none;height:48vh;min-height:260px}
 #monster-lane{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,transparent 60%,rgba(0,240,255,0.02))}
 .monster{position:absolute;text-align:center;padding:6px;z-index:10;will-change:top;width:80px}
@@ -82,12 +83,12 @@ padding-top:var(--sat);padding-bottom:var(--sab);padding-left:var(--sal);padding
 .go-stats span{color:var(--cyan);font-weight:700}
 .restart-btn{padding:12px 36px;background:linear-gradient(135deg,var(--cyan),var(--magenta));border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
 .start-overlay{display:flex;position:absolute;inset:0;background:rgba(0,0,0,0.88);z-index:100;justify-content:center;align-items:center;flex-direction:column;gap:10px;border-radius:14px;backdrop-filter:blur(8px);padding:20px}
-.start-overlay .start-title{font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.start-overlay .start-title{font-size:32px;font-weight:900;text-align:center;background:linear-gradient(135deg,var(--cyan),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .start-overlay .start-sub{font-size:12px;color:var(--text2);text-align:center;line-height:1.8}
 .start-overlay .start-btn{padding:14px 40px;background:linear-gradient(135deg,var(--cyan),var(--magenta));border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(0,240,255,0.3)}
 .defense-name{display:block;font-size:10px;color:var(--text2);text-align:center;margin-top:2px}
-.start-features{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.start-feature{padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:10px;color:var(--text2)}
+.start-features{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:4px 0}
+.start-feature{padding:3px 10px;background:var(--surface);border-radius:8px;font-size:11px;color:var(--text2)}
 .start-pokemon{font-size:14px;color:var(--cyan);font-weight:700;margin:4px 0}
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(4px)}
 .confirm-overlay.show{display:flex}
@@ -184,4 +185,4 @@ padding-top:var(--sat);padding-bottom:var(--sab);padding-left:var(--sal);padding
 100%{box-shadow:0 0 30px rgba(255,215,0,0.7)}
 }
 #screen-flash{position:fixed;inset:0;z-index:999;pointer-events:none;opacity:0;transition:opacity 0.15s}
-#screen-flash.show{opacity:1}
+#screen-flash.show{opacity:1;background:radial-gradient(circle,rgba(255,215,0,0.6),rgba(255,0,68,0.3))}
