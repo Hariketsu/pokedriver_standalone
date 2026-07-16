@@ -37,10 +37,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className={notoSansSC.variable}>
-      <head>
-        {/* Preconnect for any external resources */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-      </head>
       <body style={{ fontFamily: "'Noto Sans SC', 'Microsoft YaHei', sans-serif" }}>
         {children}
       </body>

@@ -90,8 +90,13 @@ export default function Home() {
     // If no localStorage bank, try fetching external question bank
     const savedBank = (() => { try { return localStorage.getItem('drivingDefenseImportedBank'); } catch { return null; } })();
     if (!savedBank) {
-      fetch(`questions_bank.json?t=${Date.now()}`)
+      // Use AbortController to time out after 5 s on slow networks (e.g. China mainland mobile)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      fetch(`questions_bank.json`, { signal: controller.signal })
         .then((res) => {
+          clearTimeout(timeoutId);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
@@ -107,7 +112,8 @@ export default function Home() {
           }
         })
         .catch(() => {
-          /* fetch failed — fall through to BUILTIN_QUESTIONS below */
+          clearTimeout(timeoutId);
+          /* fetch failed or timed out — fall through to BUILTIN_QUESTIONS below */
         });
     }
 
@@ -136,6 +142,10 @@ export default function Home() {
   // ==========================================================
   // Dispatch the first question when the game starts (or restarts)
   // Triggers on: start screen dismissed, or game-over → restart
+  // IMPORTANT: allQuestions is persisted by zustand but questions
+  // (the shuffled queue) is NOT.  If persist restores allQuestions
+  // without a matching questions queue (e.g. user switches device
+  // or clears only part of localStorage), we must rebuild it here.
   // ==========================================================
 
   useEffect(() => {
@@ -143,8 +153,18 @@ export default function Home() {
     if (currentQ) return;
 
     const store = useGameStore.getState();
-    if (store.questions.length > 0) {
-      setTimeout(() => store.nextQuestion(), 500);
+
+    // Rebuild the shuffled question queue if persist restored
+    // allQuestions but questions is still empty.
+    if (store.questions.length === 0 && store.allQuestions.length > 0) {
+      const shuffled = shuffleArray(store.allQuestions);
+      useGameStore.setState({ questions: shuffled });
+    }
+
+    // Re-read state in case we just rebuilt the queue
+    const s = useGameStore.getState();
+    if (s.questions.length > 0) {
+      setTimeout(() => s.nextQuestion(), 500);
     }
   }, [startScreenVisible, gameOver, currentQ]);
 
