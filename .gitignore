@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# large raw archives (keep local only)
+ref/raw/*.zip
+**/.DS_Store
+
+# nested clone / large archives (local reference only)
+ref/driving-test-subject1/

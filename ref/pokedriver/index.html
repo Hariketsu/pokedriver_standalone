@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#070b16">
+<title>宝可驾 · 交规地牢</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="shake-wrap">
+
+    <!-- 标题页 -->
+    <section class="screen active" id="scr-title">
+      <div class="title-bg"><div class="title-grid"></div><div class="title-glow"></div></div>
+      <div class="title-inner">
+        <div class="title-logo">
+          <div class="logo-top">宝可驾</div>
+          <div class="logo-sub">交 规 地 牢</div>
+          <div class="logo-tag">— 答题爬塔 · 捕捉宝可梦 · 通关科目一 —</div>
+        </div>
+        <div class="title-pkmn" id="title-pkmn"></div>
+        <div class="menu">
+          <button class="btn btn-primary" id="btn-start">开始冒险</button>
+          <button class="btn hidden" id="btn-continue">继续冒险</button>
+          <button class="btn" id="btn-dex">宝可梦图鉴</button>
+          <button class="btn" id="btn-review">题库复习</button>
+          <button class="btn" id="btn-settings">设置</button>
+        </div>
+        <div class="title-stats" id="title-stats"></div>
+        <div class="title-foot">驾考题库 1034 题 · 宝可梦 721 只 · 数据仅供学习娱乐</div>
+      </div>
+    </section>
+
+    <!-- 初始宝可梦选择 -->
+    <section class="screen" id="scr-starter">
+      <div class="page-head"><h2>选择你的初始伙伴</h2><p class="dim">它将陪你踏入交规地牢</p></div>
+      <div class="starter-row" id="starter-row"></div>
+    </section>
+
+    <!-- 地图页 -->
+    <section class="screen" id="scr-map">
+      <div class="hud-bar">
+        <div class="hud-item" id="hud-floor">第 1 层</div>
+        <div class="hud-item gold" id="hud-gold">0 金币</div>
+        <div class="hud-item" id="hud-score">分数 0</div>
+        <button class="btn btn-mini" id="btn-map-team">队伍</button>
+        <button class="btn btn-mini" id="btn-map-quit">存档退出</button>
+      </div>
+      <div class="map-scroll" id="map-scroll">
+        <div class="map-inner" id="map-inner">
+          <svg id="map-svg"></svg>
+          <div id="map-nodes"></div>
+        </div>
+      </div>
+      <div class="map-legend">
+        <span><i class="lg lg-battle"></i>战斗</span>
+        <span><i class="lg lg-elite"></i>精英</span>
+        <span><i class="lg lg-shop"></i>商店</span>
+        <span><i class="lg lg-rest"></i>休息</span>
+        <span><i class="lg lg-boss"></i>BOSS</span>
+      </div>
+    </section>
+
+    <!-- 战斗页 -->
+    <section class="screen" id="scr-battle">
+      <div class="battle-stage">
+        <canvas id="battle-canvas"></canvas>
+        <div id="battle-fallback" class="hidden">
+          <img id="fb-player" alt=""><img id="fb-enemy" alt="">
+        </div>
+        <div class="battle-topbar">
+          <div class="bt-item" id="bt-floor">1F</div>
+          <div class="bt-item gold" id="bt-gold">0</div>
+          <div class="bt-item" id="bt-score">0分</div>
+          <div class="combo-badge hidden" id="combo-badge">COMBO ×2</div>
+        </div>
+        <div class="enemy-card" id="enemy-card">
+          <div class="ec-name" id="enemy-name">???</div>
+          <div class="ec-hp"><div class="ec-hp-fill" id="enemy-hp-fill"></div><span id="enemy-hp-text"></span></div>
+          <div class="ec-tags" id="enemy-tags"></div>
+        </div>
+        <div class="player-card" id="player-card">
+          <div class="pc-name" id="player-name">???</div>
+          <div class="pc-hp"><div class="pc-hp-fill" id="player-hp-fill"></div><span id="player-hp-text"></span></div>
+          <div class="pc-lv" id="player-lv">Lv.1</div>
+        </div>
+        <div class="fx-layer" id="fx-layer"></div>
+      </div>
+      <div class="battle-panel">
+        <div class="team-bar" id="team-bar"></div>
+        <div class="q-card" id="q-card">
+          <div class="q-timer"><div class="q-timer-fill" id="q-timer-fill"></div></div>
+          <div class="q-text" id="q-text"></div>
+          <div class="q-opts" id="q-opts"></div>
+        </div>
+        <div class="battle-actions">
+          <button class="btn btn-mini hidden" id="btn-potion">伤药</button>
+          <button class="btn btn-mini hidden" id="btn-flee-note"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 商店页 -->
+    <section class="screen" id="scr-shop">
+      <div class="page-head"><h2>神秘商店</h2><p class="dim" id="shop-gold">金币：0</p></div>
+      <div class="shop-list" id="shop-list"></div>
+      <div class="page-foot"><button class="btn btn-primary" id="btn-shop-leave">离开商店</button></div>
+    </section>
+
+    <!-- 休息页 -->
+    <section class="screen" id="scr-rest">
+      <div class="page-head"><h2>篝火休息点</h2><p class="dim">选择一项恢复</p></div>
+      <div class="rest-list" id="rest-list"></div>
+    </section>
+
+    <!-- 图鉴页 -->
+    <section class="screen" id="scr-dex">
+      <div class="page-head row">
+        <button class="btn btn-mini back" data-back>‹ 返回</button>
+        <h2>宝可梦图鉴</h2>
+        <div class="dex-progress" id="dex-progress">0/721</div>
+      </div>
+      <div class="dex-filter" id="dex-filter">
+        <button class="chip active" data-f="all">全部</button>
+        <button class="chip" data-f="caught">已捕获</button>
+        <button class="chip" data-f="c">普通</button>
+        <button class="chip" data-f="u">稀有</button>
+        <button class="chip" data-f="r">珍贵</button>
+        <button class="chip" data-f="l">传说</button>
+      </div>
+      <div class="dex-grid" id="dex-grid"></div>
+    </section>
+
+    <!-- 复习页 -->
+    <section class="screen" id="scr-review">
+      <div class="page-head row">
+        <button class="btn btn-mini back" data-back>‹ 返回</button>
+        <h2>题库复习</h2>
+        <button class="btn btn-mini" id="btn-quiz">模拟练习</button>
+      </div>
+      <div class="review-bar">
+        <input type="search" id="review-search" placeholder="搜索题目关键词…">
+        <button class="chip" id="chip-wrong">只看错题 (<span id="wrong-count">0</span>)</button>
+      </div>
+      <div class="review-list" id="review-list"></div>
+      <div class="review-pager">
+        <button class="btn btn-mini" id="pg-prev">上一页</button>
+        <span id="pg-info">1/1</span>
+        <button class="btn btn-mini" id="pg-next">下一页</button>
+      </div>
+    </section>
+
+    <!-- 设置页 -->
+    <section class="screen" id="scr-settings">
+      <div class="page-head row">
+        <button class="btn btn-mini back" data-back>‹ 返回</button>
+        <h2>设置</h2><span></span>
+      </div>
+      <div class="settings-list">
+        <div class="set-row"><span>背景音乐</span><input type="range" id="set-bgm" min="0" max="100" value="60"></div>
+        <div class="set-row"><span>音效音量</span><input type="range" id="set-sfx" min="0" max="100" value="80"></div>
+        <div class="set-row"><span>屏幕震动</span><button class="chip" id="set-shake">开</button></div>
+        <div class="set-row"><span>答题限时</span>
+          <div class="seg" id="set-diff">
+            <button data-d="easy">简单 30s</button><button data-d="normal" class="active">普通 20s</button><button data-d="hard">困难 12s</button>
+          </div>
+        </div>
+        <div class="set-row danger"><span>清除所有数据</span><button class="btn btn-mini btn-danger" id="set-wipe">清除</button></div>
+        <div class="set-note">进度自动保存在本设备浏览器中（localStorage）。</div>
+      </div>
+    </section>
+
+    <!-- 结算页 -->
+    <section class="screen" id="scr-over">
+      <div class="over-inner">
+        <div class="over-title" id="over-title">冒险结束</div>
+        <div class="over-sub" id="over-sub"></div>
+        <div class="over-stats" id="over-stats"></div>
+        <div class="over-btns">
+          <button class="btn btn-primary" id="btn-over-restart">再来一局</button>
+          <button class="btn" id="btn-over-title">回到标题</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 弹窗层 -->
+  <div class="modal-wrap hidden" id="modal-wrap"><div class="modal" id="modal"></div></div>
+  <div id="toast"></div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="data/data_questions.js"></script>
+<script src="data/data_pokemon.js"></script>
+<script src="data/data_icons.js"></script>
+<script src="data/data_rules.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/fx3d.js"></script>
+<script src="js/game.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
