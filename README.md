@@ -1,26 +1,29 @@
-# 驾考保卫战 — 宝可梦版
+# 宝可驾 · 交规地牢
 
-一边答题一边打怪！宝可梦主题的驾考练习游戏，手机浏览器畅快访问。
+Slay the Spire 式答题爬塔：一边答驾考题，一边组队打宝可梦。手机浏览器可玩，进度本地保存。
 
 ## 玩法
 
-- 回答驾考题来攻击怪物，答对扣血、答错自己受伤
-- 连击（5/10 连击）触发双倍伤害
-- 击杀同一宝可梦 10 次即可解锁，在图鉴中切换你的防守精灵
-- 攒满技能条释放全屏清除
-- 抽卡（200 金币）获取未解锁的稀有宝可梦
-- 支持导入自定义题库（JSON 格式）
+- **地图爬塔**：15 层节点地图（普通战 / 精英 / 商店 / 休息 / 中层 BOSS / 终局 BOSS）
+- **答题战斗**：答对攻击敌人，答错或超时被反击；连击提升输出
+- **捕获**：战后用精灵球 / 超级球捕获；队伍上限 6 只，满员可替换
+- **商店**：买球、药水、永久攻防加成、复活等
+- **休息**：全队回血、主动精灵加经验、或清空错题记录
+- **图鉴 / 错题本 / 设置**：记录见过与捕获、复习错题、调节音量与难度
+
+难度影响答题时限（`TIMER_SEC`：简单 30s / 普通 20s / 困难 12s）。精灵等级上限 `MAX_LEVEL = 10`，队伍 `MAX_TEAM = 6`。
 
 ## 技术栈
 
 | 层面 | 技术 |
 |------|------|
-| 框架 | Next.js 16 (App Router) + TypeScript |
-| 状态管理 | Zustand + persist 中间件（localStorage） |
-| 游戏循环 | requestAnimationFrame + setInterval 双保险 |
-| 动画 | Canvas 粒子背景 + CSS 动画（怪物受伤/连击提示） |
-| 字体 | next/font/google — Noto Sans SC，构建时自托管 |
-| 数据 | 721 只宝可梦 + base64 图标 + 1034 道驾考题 |
+| 框架 | Next.js 16（App Router）+ TypeScript + React 19 |
+| 状态 | Zustand + 手动 localStorage（`pd_meta_v1` / `pd_save_v1`） |
+| 3D FX | Three.js（战斗场景，客户端） |
+| 音频 | Web Audio API 合成 BGM / SFX |
+| 数据 | 1034 道驾考题 + 721 只宝可梦 + 图标 JSON |
+
+纯客户端应用，无后端、无数据库。
 
 ## 快速开始
 
@@ -29,81 +32,69 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-## 项目结构
-
-```
-├── app/                       # Next.js App Router
-│   ├── layout.tsx             # 根布局（字体、viewport、PWA meta）
-│   ├── page.tsx               # 主页面（三 Tab 协调）
-│   └── globals.css            # 全局样式（暗色主题）
-├── components/
-│   ├── battle/                # 战斗系统（9 个组件）
-│   │   ├── GameArea.tsx       # 核心：游戏循环 + 怪物跑道 + 射击 + 技能
-│   │   ├── Monster.tsx        # 怪物（图标 + 血条 + 受伤动画）
-│   │   ├── QuestionPanel.tsx  # 题目面板（4 选项）
-│   │   ├── UpgradePanel.tsx   # 升级面板（伤害/生命）
-│   │   └── ...
-│   ├── pokedex/               # 宝可梦图鉴
-│   ├── bank/                  # 题库浏览（搜索 + 分页）
-│   ├── layout/                # TabBar、Header、Footer
-│   └── ui/                    # ParticleCanvas、Toast、ConfirmDialog
-├── lib/
-│   ├── store.ts               # Zustand 全局状态（替代原 G 对象）
-│   ├── pokemon.ts             # 宝可梦纯函数（查找、属性计算）
-│   └── game-engine.ts         # 游戏引擎（生成、伤害、概率）
-├── data/
-│   ├── pokemon-data.ts        # 721 只宝可梦元数据
-│   ├── pokemon-icons.ts       # base64 图标映射（~318KB）
-│   └── questions-builtin.ts   # 1034 道内置驾考题
-└── public/
-    └── manifest.json          # PWA 清单
-```
-
-## 部署到 Vercel
+生产构建：
 
 ```bash
 npm run build
-npx vercel --prod
+npm start
 ```
 
-纯客户端应用，无需 Serverless Functions 或数据库。首次访问即完全可用。
-
-## 自定义题库
-
-准备一个 JSON 文件：
-
-```json
-[
-  {
-    "id": "q0001",
-    "question": "驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？",
-    "options": ["违章行为", "违法行为", "过失行为", "违规行为"],
-    "answer": 1
-  }
-]
-```
-
-字段要求：`question`（题目）、`options`（选项数组）、`answer`（正确答案索引，0-based）。
-
-在游戏底部点击「导入题库」上传即可，数据保存在本地浏览器。
-
-## 架构说明
-
-### localStorage → Zustand
-
-原有 7 个独立的 `drivingDefense*` key 合并为 1 个 Zustand persist store：
+## 项目结构
 
 ```
-drivingDefenseStats / Upgrades / PokeKills / PokeUnlocks / ActivePkm / ImportedBank / Best
-        ↓
-drivingDefense (单一 key，partialize 只持久化必要字段)
+├── app/
+│   ├── layout.tsx          # 根布局、viewport、PWA meta
+│   ├── page.tsx            # 入口（客户端 GameApp）
+│   └── globals.css         # 全局样式（对齐原版 HTML）
+├── components/
+│   ├── GameApp.tsx         # 屏幕路由、音频/FX 生命周期
+│   ├── screens/            # title / starter / map / battle / shop /
+│   │                       # rest / dex / review / settings / over
+│   └── ui/                 # Modal、Toast
+├── lib/
+│   ├── store.ts            # 全局状态与 run/meta 持久化
+│   ├── formulas.ts         # HP/ATK/捕获/计分（含 TIMER_SEC、CATCH_BASE）
+│   ├── battle.ts           # 战斗逻辑、出题、胜负结算
+│   ├── map.ts              # 15 层地图生成与可达性
+│   ├── shop.ts             # 商品池与购买效果
+│   ├── audio.ts            # Web Audio 引擎
+│   ├── fx3d.ts             # Three.js 战斗特效
+│   ├── dom-fx.ts           # DOM 飘字 / 震动
+│   └── types.ts            # Run / Battle / Modal 类型
+├── data/
+│   ├── questions.json      # 1034 题
+│   ├── pokemon.json        # 721 宝可梦
+│   ├── pokemon-icons.json  # 图标
+│   ├── game_rules.json     # 稀有度倍率等规则
+│   └── constants.ts        # GAME_CONST（MAX_TEAM / MAX_LEVEL …）
+├── public/manifest.json
+└── ref/                    # 原版 HTML/JS 参考实现（只读对照，不参与构建）
 ```
 
-首次加载自动迁移旧数据。
+## 关键常量（与原版对齐）
 
-### 性能设计
+| 常量 | 值 | 位置 |
+|------|-----|------|
+| `MAX_TEAM` | 6 | `data/constants.ts` → `GAME_CONST` |
+| `MAX_LEVEL` | 10 | 同上 |
+| `MAP_ROWS` | 15 | `lib/map.ts` |
+| `TIMER_SEC` | easy 30 / normal 20 / hard 12 | `lib/formulas.ts` |
+| `CATCH_BASE` | c 0.9 / u 0.7 / r 0.45 / l 0.22 | `lib/formulas.ts` |
 
-- **Monster 位置更新**（~50ms 间隔）：使用 `useRef` + 直接 DOM 操作（`el.style.top`），绕过 React 渲染管线
-- **POKEMON_ICONS**（318KB）：静态 import，Next.js 自动代码分割
-- **粒子背景**：独立 Canvas，`pointer-events: none`，不阻塞交互
-- **Safe Area**：全面支持 iPhone 刘海屏 / 底部指示条
+## 架构要点
+
+- **屏幕状态机**：`ScreenId` 驱动 `GameApp` 挂载对应 screen 组件。
+- **Run vs Meta**：本局进度 `RunState` 与跨局图鉴/设置 `MetaState` 分 key 存储。
+- **战斗**：出题 → 作答/超时 → 玩家攻击或敌方反击 → 濒死切换 → 胜后捕获/奖励 → 回地图。
+- **客户端边界**：`page.tsx` / `GameApp` 均为 `"use client"`；Three.js 与 Audio 仅在浏览器副作用中初始化。
+
+## 部署
+
+```bash
+npm run build
+npx vercel --prod   # 或其他静态/Node 托管
+```
+
+## 参考实现
+
+`ref/pokedriver/` 为原始单页 HTML 游戏（`js/game.js`、`battle.js`、`screens.js`、`audio.js`、`fx3d.js`）。本仓库为 Next.js + TypeScript 移植，逻辑与公式尽量一一对应；请勿在业务代码中 import `ref/`。
