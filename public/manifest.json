@@ -1,12 +1,12 @@
 {
-  "name": "驾考保卫战 - 宝可梦版",
-  "short_name": "驾考保卫战",
+  "name": "宝可驾",
+  "short_name": "交规地牢",
   "description": "一边答题一边打怪！宝可梦主题的驾考练习游戏",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#0a0a1a",
-  "background_color": "#0a0a1a",
+  "theme_color": "#070b16",
+  "background_color": "#070b16",
   "icons": [
     {
       "src": "/favicon.ico",

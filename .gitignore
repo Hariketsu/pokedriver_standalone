@@ -46,3 +46,6 @@ ref/raw/*.zip
 
 # nested clone / large archives (local reference only)
 ref/driving-test-subject1/
+
+# nested local scrapers / clones (not part of the app)
+ref/DriverLicenseQuestionsSpider/
