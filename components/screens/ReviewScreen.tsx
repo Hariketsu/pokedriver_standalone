@@ -118,16 +118,38 @@ export default function ReviewScreen() {
           ‹ 返回
         </button>
         <h2>题库复习</h2>
-        <button
-          className="btn btn-mini"
-          id="btn-quiz"
-          onClick={() => {
-            AudioEngine.sfx("click");
-            openQuiz();
-          }}
-        >
-          模拟练习
-        </button>
+        <div className="review-head-actions">
+          <button
+            className="btn btn-mini"
+            id="btn-exam-full"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              setScreen("exam");
+            }}
+          >
+            模考
+          </button>
+          <button
+            className="btn btn-mini"
+            id="btn-wrong"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              setScreen("wrong");
+            }}
+          >
+            错题
+          </button>
+          <button
+            className="btn btn-mini"
+            id="btn-quiz"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              openQuiz();
+            }}
+          >
+            练习
+          </button>
+        </div>
       </div>
       <div className="review-bar">
         <input
@@ -267,7 +289,7 @@ export default function ReviewScreen() {
               return (
                 <>
                   <h3 style={{ textAlign: "center" }}>
-                    {pass ? "🎉 合格！" : "继续努力"}
+                    {pass ? "🎉 练习完成" : "继续加油"}
                   </h3>
                   <div
                     style={{
@@ -278,16 +300,14 @@ export default function ReviewScreen() {
                       margin: "12px 0",
                     }}
                   >
-                    {quiz.score * 10}
+                    {quiz.score}
                     <span style={{ fontSize: 16, color: "var(--dim)" }}>
-                      /100
+                      /10
                     </span>
                   </div>
                   <p className="dim" style={{ textAlign: "center" }}>
-                    科目一合格线为 90 分
-                    {pass
-                      ? "，你已具备上路理论资格！"
-                      : "，错题已加入错题本。"}
+                    这是 10 题快速练习，非正式模考（100 题 / 45 分钟）
+                    {pass ? "。" : "，错题已加入错题本。"}
                   </p>
                   <div className="m-actions">
                     <button

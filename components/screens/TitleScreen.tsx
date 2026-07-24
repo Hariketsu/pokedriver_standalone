@@ -31,6 +31,8 @@ export default function TitleScreen() {
   }, [hasSave, meta]);
 
   const caught = Object.values(meta.dex).filter((d) => d.caught > 0).length;
+  const wrongCount = Object.keys(meta.wrongQ).length;
+  const metaGold = meta.metaGold ?? 0;
 
   return (
     <section className="screen active" id="scr-title">
@@ -86,6 +88,16 @@ export default function TitleScreen() {
           </button>
           <button
             className="btn"
+            id="btn-train"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              setScreen("train");
+            }}
+          >
+            养成训练
+          </button>
+          <button
+            className="btn"
             id="btn-review"
             onClick={() => {
               AudioEngine.sfx("click");
@@ -93,6 +105,26 @@ export default function TitleScreen() {
             }}
           >
             题库复习
+          </button>
+          <button
+            className="btn"
+            id="btn-exam"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              setScreen("exam");
+            }}
+          >
+            科目一模拟
+          </button>
+          <button
+            className="btn"
+            id="btn-wrong"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              setScreen("wrong");
+            }}
+          >
+            错题本{wrongCount > 0 ? ` (${wrongCount})` : ""}
           </button>
           <button
             className="btn"
@@ -109,6 +141,7 @@ export default function TitleScreen() {
           <span>🏆 最高分 {meta.bestScore}</span>
           <span>🗺 冒险 {meta.runs} 次</span>
           <span>📖 图鉴 {caught}/721</span>
+          <span>💰 养成 {metaGold}</span>
         </div>
         <div className="title-foot">
           驾考题库 1034 题 · 宝可梦 721 只 · 数据仅供学习娱乐

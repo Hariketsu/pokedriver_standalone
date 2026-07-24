@@ -5,6 +5,7 @@ import { AudioEngine } from "@/lib/audio";
 
 export default function OverScreen() {
   const gameOver = useGameStore((s) => s.gameOver);
+  const meta = useGameStore((s) => s.meta);
   const setScreen = useGameStore((s) => s.setScreen);
 
   if (!gameOver) {
@@ -38,9 +39,21 @@ export default function OverScreen() {
     );
   }
 
-  const { win, score, isRecord, floorsCleared, goldEarned, correct, answered, maxCombo, captures, minutes } =
-    gameOver;
+  const {
+    win,
+    score,
+    isRecord,
+    floorsCleared,
+    goldEarned,
+    correct,
+    answered,
+    maxCombo,
+    captures,
+    minutes,
+    bankedMetaGold = 0,
+  } = gameOver;
   const acc = answered ? Math.round((correct / answered) * 100) : 0;
+  const metaGold = meta.metaGold ?? 0;
 
   const stats: [string | number, string][] = [
     [score, "总分"],
@@ -67,6 +80,11 @@ export default function OverScreen() {
             ? "你击败了最终 BOSS，驾驭了交规之力！"
             : `止步于第 ${floorsCleared || 1} 层`}
           {isRecord && <div className="new-record">✨ 新纪录！</div>}
+          {bankedMetaGold > 0 && (
+            <div className="over-bank" id="over-bank">
+              养成金币 +{bankedMetaGold}（余额 {metaGold}）
+            </div>
+          )}
         </div>
         <div className="over-stats" id="over-stats">
           {stats.map(([v, k]) => (
@@ -86,6 +104,16 @@ export default function OverScreen() {
             }}
           >
             再来一局
+          </button>
+          <button
+            className="btn"
+            id="btn-over-train"
+            onClick={() => {
+              AudioEngine.sfx("click");
+              setScreen("train");
+            }}
+          >
+            去养成
           </button>
           <button
             className="btn"

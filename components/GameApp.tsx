@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import { BattleFX } from "@/lib/fx3d";
@@ -17,6 +17,9 @@ import DexScreen from "./screens/DexScreen";
 import ReviewScreen from "./screens/ReviewScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import OverScreen from "./screens/OverScreen";
+import ExamScreen from "./screens/ExamScreen";
+import WrongBookScreen from "./screens/WrongBookScreen";
+import TrainScreen from "./screens/TrainScreen";
 import Modal from "./ui/Modal";
 import Toast from "./ui/Toast";
 
@@ -28,6 +31,8 @@ function CaptureBridge() {
 export default function GameApp() {
   const screen = useGameStore((s) => s.screen);
   const hydrated = useGameStore((s) => s.hydrated);
+  const dataReady = useGameStore((s) => s.dataReady);
+  const bootError = useGameStore((s) => s.bootError);
   const hydrate = useGameStore((s) => s.hydrate);
   const meta = useGameStore((s) => s.meta);
   const gameOver = useGameStore((s) => s.gameOver);
@@ -38,13 +43,16 @@ export default function GameApp() {
     hydrate();
   }, [hydrate]);
 
+  const [forceReady, setForceReady] = useState(false);
+  const ready = (hydrated && dataReady) || forceReady;
+
   useEffect(() => {
     if (!hydrated) return;
     AudioEngine.setBgmVol(meta.settings.bgm);
     AudioEngine.setSfxVol(meta.settings.sfx);
   }, [hydrated, meta.settings.bgm, meta.settings.sfx]);
 
-  // Unlock audio on first pointer/key（不要强行切回 title BGM，尊重当前 screen / pending）
+  // Unlock audio on first pointer/key
   useEffect(() => {
     const unlock = () => {
       AudioEngine.unlock();
@@ -70,18 +78,14 @@ export default function GameApp() {
     };
   }, []);
 
-  // Lazy BattleFX context warm (hidden canvas not available until battle;
-  // battle screen inits its own canvas)
-
   // Screen enter BGM
   useEffect(() => {
-    if (!hydrated) return;
+    if (!ready) return;
     const prev = prevScreen.current;
     prevScreen.current = screen;
 
-    if (screen === "title") {
-      // only force title BGM when leaving something else (not first paint before unlock)
-      if (prev !== "title") AudioEngine.bgm("title");
+    if (screen === "title" || screen === "train") {
+      if (prev !== "title" && prev !== "train") AudioEngine.bgm("title");
     } else if (screen === "map") {
       AudioEngine.bgm("map");
     } else if (screen === "shop") {
@@ -91,7 +95,7 @@ export default function GameApp() {
     } else if (screen === "over") {
       // handled below with gameOver sfx
     }
-  }, [screen, hydrated]);
+  }, [screen, ready]);
 
   // Game over fanfare / defeat
   useEffect(() => {
@@ -103,7 +107,6 @@ export default function GameApp() {
     overSfxDone.current = true;
     AudioEngine.sfx(gameOver.win ? "fanfare" : "defeat");
     AudioEngine.bgm(gameOver.win ? "rest" : "title");
-    // 与 ref battle.js gameOver(true) 一致：通关金彩粒子
     if (gameOver.win) {
       const layer =
         document.getElementById("app-fx-layer") ??
@@ -123,15 +126,41 @@ export default function GameApp() {
     }
   }, [screen]);
 
-  if (!hydrated) {
+  // Loading gate: hydrate + critical data integrity
+  if (!ready) {
     return (
       <div id="app">
         <div id="shake-wrap">
           <section className="screen active" id="scr-title">
+            <div className="title-bg">
+              <div className="title-grid" />
+              <div className="title-glow" />
+            </div>
             <div className="title-inner">
               <div className="title-logo">
                 <div className="logo-top">宝可驾</div>
                 <div className="logo-sub">交 规 地 牢</div>
+              </div>
+              <div id="boot-gate" className="boot-gate">
+                {bootError ? (
+                  <>
+                    <div className="boot-err">{bootError}</div>
+                    <p className="dim">关键数据校验失败，请刷新或检查构建。</p>
+                    <button
+                      type="button"
+                      className="btn btn-mini"
+                      id="btn-boot-force"
+                      onClick={() => setForceReady(true)}
+                    >
+                      仍可进入（题库异常）
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="boot-spinner" aria-hidden />
+                    <div className="boot-text">加载中…</div>
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -153,8 +182,10 @@ export default function GameApp() {
         {screen === "review" && <ReviewScreen />}
         {screen === "settings" && <SettingsScreen />}
         {screen === "over" && <OverScreen />}
+        {screen === "train" && <TrainScreen />}
+        {screen === "exam" && <ExamScreen />}
+        {screen === "wrong" && <WrongBookScreen />}
       </div>
-      {/* 全局粒子层：通关等战斗外 FX（battle 内仍用 stage 上的 #fx-layer） */}
       <div
         id="app-fx-layer"
         className="fx-layer"

@@ -5,10 +5,19 @@ import { useGameStore, selectScore } from "@/lib/store";
 import { NODE_ICON, isReachable } from "@/lib/map";
 import { clamp } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
-import type { MapNode } from "@/lib/types";
+import type { MapNode, RunState } from "@/lib/types";
 
 function stableJitter(f: number, i: number, c: number): number {
   return ((f * 17 + i * 31 + c * 13) % 17) - 8;
+}
+
+function ballHud(run: RunState): string {
+  const parts: string[] = [`🔴${run.balls}`];
+  const great = run.greatBalls ?? run.superBalls ?? 0;
+  if (great > 0) parts.push(`🔵${great}`);
+  if ((run.ultraBalls ?? 0) > 0) parts.push(`🟡${run.ultraBalls}`);
+  if ((run.masterBalls ?? 0) > 0) parts.push(`⭐${run.masterBalls}`);
+  return parts.join(" ");
 }
 
 export default function MapScreen() {
@@ -95,6 +104,9 @@ export default function MapScreen() {
         <div className="hud-item gold" id="hud-gold">
           {run.gold} 金币
         </div>
+        <div className="hud-item" id="hud-balls" title="精灵球库存">
+          {ballHud(run)}
+        </div>
         <div className="hud-item" id="hud-score">
           分数 {score}
         </div>
@@ -149,6 +161,8 @@ export default function MapScreen() {
                 const p = layout.pos[f]![i]!;
                 const boss = n.type === "boss" || n.type === "boss2";
                 let cls = "map-node" + (boss ? " boss" : "");
+                if (n.type === "event") cls += " event";
+                if (n.type === "treasure") cls += " treasure";
                 let clickable = false;
                 if (n.done) cls += " done";
                 else if (isCurrent(f, i)) cls += " current";
@@ -160,6 +174,7 @@ export default function MapScreen() {
                   <div
                     key={`${f}-${i}`}
                     className={cls}
+                    title={n.type}
                     style={{ left: p.x, top: p.y }}
                     onClick={() => {
                       if (!clickable) return;
@@ -191,6 +206,14 @@ export default function MapScreen() {
         <span>
           <i className="lg lg-rest" />
           休息
+        </span>
+        <span>
+          <i className="lg lg-event" />
+          事件
+        </span>
+        <span>
+          <i className="lg lg-treasure" />
+          宝箱
         </span>
         <span>
           <i className="lg lg-boss" />
