@@ -112,7 +112,7 @@ export default function ReviewScreen() {
           data-back
           onClick={() => {
             AudioEngine.sfx("click");
-            setScreen("title");
+            setScreen("study");
           }}
         >
           ‹ 返回

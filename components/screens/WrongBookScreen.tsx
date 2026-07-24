@@ -208,7 +208,7 @@ export default function WrongBookScreen() {
           data-back
           onClick={() => {
             AudioEngine.sfx("click");
-            setScreen("title");
+            setScreen("study");
           }}
         >
           ‹ 返回

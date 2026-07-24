@@ -137,7 +137,8 @@ export type ScreenId =
   | "treasure"
   | "train"
   | "exam"
-  | "wrong";
+  | "wrong"
+  | "study";
 
 export type BallType = "normal" | "great" | "ultra" | "master";
 

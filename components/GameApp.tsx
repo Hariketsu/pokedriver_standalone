@@ -20,6 +20,7 @@ import OverScreen from "./screens/OverScreen";
 import ExamScreen from "./screens/ExamScreen";
 import WrongBookScreen from "./screens/WrongBookScreen";
 import TrainScreen from "./screens/TrainScreen";
+import StudyHubScreen from "./screens/StudyHubScreen";
 import Modal from "./ui/Modal";
 import Toast from "./ui/Toast";
 
@@ -84,8 +85,28 @@ export default function GameApp() {
     const prev = prevScreen.current;
     prevScreen.current = screen;
 
-    if (screen === "title" || screen === "train") {
-      if (prev !== "title" && prev !== "train") AudioEngine.bgm("title");
+    if (
+      screen === "title" ||
+      screen === "train" ||
+      screen === "study" ||
+      screen === "exam" ||
+      screen === "wrong" ||
+      screen === "review" ||
+      screen === "dex" ||
+      screen === "settings"
+    ) {
+      if (
+        prev !== "title" &&
+        prev !== "train" &&
+        prev !== "study" &&
+        prev !== "exam" &&
+        prev !== "wrong" &&
+        prev !== "review" &&
+        prev !== "dex" &&
+        prev !== "settings"
+      ) {
+        AudioEngine.bgm("title");
+      }
     } else if (screen === "map") {
       AudioEngine.bgm("map");
     } else if (screen === "shop") {
@@ -183,6 +204,7 @@ export default function GameApp() {
         {screen === "settings" && <SettingsScreen />}
         {screen === "over" && <OverScreen />}
         {screen === "train" && <TrainScreen />}
+        {screen === "study" && <StudyHubScreen />}
         {screen === "exam" && <ExamScreen />}
         {screen === "wrong" && <WrongBookScreen />}
       </div>

@@ -13,7 +13,6 @@ export default function TitleScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
   const continueRun = useGameStore((s) => s.continueRun);
   const openModal = useGameStore((s) => s.openModal);
-  // 与 ref renderTitle 同步：首帧即根据存档显示「继续冒险」，避免 hidden 闪一下
   const [saveExists, setSaveExists] = useState(() =>
     useGameStore.getState().hasSave(),
   );
@@ -34,117 +33,135 @@ export default function TitleScreen() {
   const wrongCount = Object.keys(meta.wrongQ).length;
   const metaGold = meta.metaGold ?? 0;
 
+  function go(screen: "dex" | "study" | "train" | "settings") {
+    AudioEngine.sfx("click");
+    setScreen(screen);
+  }
+
+  function onPrimaryStart() {
+    AudioEngine.sfx("click");
+    if (hasSave()) openModal({ kind: "confirmNewRun" });
+    else setScreen("starter");
+  }
+
+  function onContinue() {
+    AudioEngine.sfx("click");
+    if (continueRun()) AudioEngine.bgm("map");
+  }
+
   return (
     <section className="screen active" id="scr-title">
       <div className="title-bg">
         <div className="title-grid" />
         <div className="title-glow" />
       </div>
+
+      <button
+        type="button"
+        className="title-settings-btn"
+        id="btn-settings"
+        aria-label="设置"
+        onClick={() => go("settings")}
+      >
+        ⚙
+      </button>
+
       <div className="title-inner">
         <div className="title-logo">
           <div className="logo-top">宝可驾</div>
           <div className="logo-sub">交 规 地 牢</div>
           <div className="logo-tag">— 答题爬塔 · 捕捉宝可梦 · 通关科目一 —</div>
         </div>
+
         <div className="title-pkmn" id="title-pkmn">
           {titleIds.map((id) => (
             <img key={id} src={ICON(id)} alt={PKMN_BY_ID[id]?.c ?? ""} />
           ))}
         </div>
-        <div className="menu">
+
+        <div className="title-cta">
+          {saveExists ? (
+            <>
+              <button
+                className="btn btn-primary"
+                id="btn-continue"
+                onClick={onContinue}
+              >
+                继续冒险
+              </button>
+              <button
+                className="btn btn-ghost"
+                id="btn-start"
+                onClick={onPrimaryStart}
+              >
+                新的冒险
+              </button>
+            </>
+          ) : (
+            <button
+              className="btn btn-primary"
+              id="btn-start"
+              onClick={onPrimaryStart}
+            >
+              开始冒险
+            </button>
+          )}
+        </div>
+
+        <div className="title-grid-nav" aria-label="次要功能">
           <button
-            className="btn btn-primary"
-            id="btn-start"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              if (hasSave()) {
-                openModal({ kind: "confirmNewRun" });
-              } else {
-                setScreen("starter");
-              }
-            }}
-          >
-            开始冒险
-          </button>
-          <button
-            className={`btn${saveExists ? "" : " hidden"}`}
-            id="btn-continue"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              if (continueRun()) AudioEngine.bgm("map");
-            }}
-          >
-            继续冒险
-          </button>
-          <button
-            className="btn"
+            type="button"
+            className="title-nav-card"
             id="btn-dex"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              setScreen("dex");
-            }}
+            onClick={() => go("dex")}
           >
-            宝可梦图鉴
+            <span className="tnc-icon">📖</span>
+            <span className="tnc-label">图鉴</span>
+            <span className="tnc-sub">
+              {caught}/721
+            </span>
           </button>
           <button
-            className="btn"
+            type="button"
+            className="title-nav-card"
+            id="btn-study"
+            onClick={() => go("study")}
+          >
+            <span className="tnc-icon">📚</span>
+            <span className="tnc-label">学习</span>
+            <span className="tnc-sub">
+              {wrongCount > 0 ? `错题 ${wrongCount}` : "模考 · 题库"}
+            </span>
+          </button>
+          <button
+            type="button"
+            className="title-nav-card"
             id="btn-train"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              setScreen("train");
-            }}
+            onClick={() => go("train")}
           >
-            养成训练
+            <span className="tnc-icon">🧬</span>
+            <span className="tnc-label">养成</span>
+            <span className="tnc-sub">💰 {metaGold}</span>
           </button>
           <button
-            className="btn"
-            id="btn-review"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              setScreen("review");
-            }}
+            type="button"
+            className="title-nav-card title-nav-card-dim"
+            id="btn-settings-grid"
+            onClick={() => go("settings")}
           >
-            题库复习
-          </button>
-          <button
-            className="btn"
-            id="btn-exam"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              setScreen("exam");
-            }}
-          >
-            科目一模拟
-          </button>
-          <button
-            className="btn"
-            id="btn-wrong"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              setScreen("wrong");
-            }}
-          >
-            错题本{wrongCount > 0 ? ` (${wrongCount})` : ""}
-          </button>
-          <button
-            className="btn"
-            id="btn-settings"
-            onClick={() => {
-              AudioEngine.sfx("click");
-              setScreen("settings");
-            }}
-          >
-            设置
+            <span className="tnc-icon">⚙</span>
+            <span className="tnc-label">设置</span>
+            <span className="tnc-sub">音量 · 难度</span>
           </button>
         </div>
+
         <div className="title-stats" id="title-stats">
-          <span>🏆 最高分 {meta.bestScore}</span>
-          <span>🗺 冒险 {meta.runs} 次</span>
-          <span>📖 图鉴 {caught}/721</span>
-          <span>💰 养成 {metaGold}</span>
+          {meta.bestScore > 0 && <span>🏆 {meta.bestScore}</span>}
+          <span>📖 {caught}/721</span>
+          <span>💰 {metaGold}</span>
         </div>
         <div className="title-foot">
-          驾考题库 1034 题 · 宝可梦 721 只 · 数据仅供学习娱乐
+          驾考题库 1034 题 · 宝可梦 721 只 · 仅供学习娱乐
         </div>
       </div>
     </section>

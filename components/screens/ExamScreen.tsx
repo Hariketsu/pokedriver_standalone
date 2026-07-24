@@ -131,7 +131,7 @@ export default function ExamScreen() {
       return;
     }
     setSession(null);
-    setScreen("title");
+    setScreen("study");
   }
 
   const currentQ = session?.qs[session.idx];
@@ -163,7 +163,7 @@ export default function ExamScreen() {
             data-back
             onClick={() => {
               AudioEngine.sfx("click");
-              setScreen("title");
+              setScreen("study");
             }}
           >
             ‹ 返回
@@ -213,7 +213,7 @@ export default function ExamScreen() {
             onClick={() => {
               AudioEngine.sfx("click");
               setSession(null);
-              setScreen("title");
+              setScreen("study");
             }}
           >
             ‹ 返回
@@ -288,7 +288,7 @@ export default function ExamScreen() {
               onClick={() => {
                 AudioEngine.sfx("click");
                 setSession(null);
-                setScreen("title");
+                setScreen("study");
               }}
             >
               返回标题
@@ -462,7 +462,7 @@ export default function ExamScreen() {
                   AudioEngine.sfx("click");
                   setConfirmLeave(false);
                   setSession(null);
-                  setScreen("title");
+                  setScreen("study");
                 }}
               >
                 确认退出
