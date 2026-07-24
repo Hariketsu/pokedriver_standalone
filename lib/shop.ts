@@ -1,4 +1,4 @@
-import { GAME_CONST } from "@/data";
+import { GAME_CONST, MASTER_BALL_RUN_CAP } from "@/data";
 import { pokeMaxHp } from "./formulas";
 import type { RunState, ShopItemDef, ShopItemId } from "./types";
 
@@ -36,12 +36,28 @@ export const SHOP_POOL: ShopItemDef[] = [
     can: () => true,
   },
   {
-    id: "superBalls",
+    id: "greatBalls",
     icon: "🔵",
     name: "超级球 ×2",
     desc: "捕获率 ×1.6 的高级精灵球",
     price: 70,
     can: () => true,
+  },
+  {
+    id: "ultraBalls",
+    icon: "🟡",
+    name: "高级球 ×1",
+    desc: "捕获率 ×2.2 的高级精灵球",
+    price: 110,
+    can: () => true,
+  },
+  {
+    id: "masterBall",
+    icon: "⭐",
+    name: "大师球 ×1",
+    desc: "必定捕获（本局限 1 个）",
+    price: 200,
+    can: (r) => r.masterBalls < MASTER_BALL_RUN_CAP,
   },
   {
     id: "atkBadge",
@@ -81,7 +97,7 @@ export function shopPrice(base: number, floor: number): number {
   return base + Math.floor(floor * 2.5);
 }
 
-/** Apply shop item effect. Mutates run. */
+/** Apply shop item effect. Mutates run. Accepts legacy superBalls id. */
 export function applyShopItem(run: RunState, id: ShopItemId): void {
   switch (id) {
     case "potion":
@@ -103,8 +119,18 @@ export function applyShopItem(run: RunState, id: ShopItemId): void {
     case "balls":
       run.balls += 3;
       break;
+    case "greatBalls":
     case "superBalls":
-      run.superBalls += 2;
+      run.greatBalls += 2;
+      run.superBalls = run.greatBalls;
+      break;
+    case "ultraBalls":
+      run.ultraBalls += 1;
+      break;
+    case "masterBall":
+      if (run.masterBalls < MASTER_BALL_RUN_CAP) {
+        run.masterBalls += 1;
+      }
       break;
     case "atkBadge":
       run.atkBonus++;
@@ -121,7 +147,6 @@ export function applyShopItem(run: RunState, id: ShopItemId): void {
       });
       break;
     case "xpBook": {
-      // Original only adds XP; level-up happens later via battle/rest grant
       const a = run.team[run.activeIdx]!;
       a.xp += 25;
       break;
@@ -131,9 +156,16 @@ export function applyShopItem(run: RunState, id: ShopItemId): void {
   }
 }
 
-/** Pick up to 5 unique shop items (same shuffle as original). */
-export function rollShopStock(): ShopItemDef[] {
-  const pool = SHOP_POOL.slice();
+/**
+ * Pick up to 5 unique shop items.
+ * Master ball only joins the pool with ~15% chance when under cap.
+ */
+export function rollShopStock(run?: RunState): ShopItemDef[] {
+  const pool = SHOP_POOL.filter((item) => {
+    if (item.id !== "masterBall") return true;
+    if (run && run.masterBalls >= MASTER_BALL_RUN_CAP) return false;
+    return Math.random() < 0.15;
+  });
   const stock: ShopItemDef[] = [];
   while (stock.length < 5 && pool.length) {
     const i = Math.floor(Math.random() * pool.length);

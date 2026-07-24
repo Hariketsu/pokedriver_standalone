@@ -219,12 +219,22 @@ export function tryCapture(
   if (ball === "normal") {
     if (run.balls <= 0) return { ok: false, depleted: true };
     run.balls--;
+  } else if (ball === "great") {
+    if (run.greatBalls <= 0) return { ok: false, depleted: true };
+    run.greatBalls--;
+    run.superBalls = run.greatBalls;
+  } else if (ball === "ultra") {
+    if (run.ultraBalls <= 0) return { ok: false, depleted: true };
+    run.ultraBalls--;
+  } else if (ball === "master") {
+    if (run.masterBalls <= 0) return { ok: false, depleted: true };
+    run.masterBalls--;
   } else {
-    if (run.superBalls <= 0) return { ok: false, depleted: true };
-    run.superBalls--;
+    return { ok: false, depleted: true };
   }
   const ep = PKMN_BY_ID[battle.enemy.id];
   if (!ep) return { ok: false, depleted: false };
+  if (ball === "master") return { ok: true, depleted: false };
   const success = Math.random() < catchChance(ep.r, ball);
   return { ok: success, depleted: false };
 }

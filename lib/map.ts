@@ -6,13 +6,26 @@ export const NODE_ICON: Record<NodeType, string> = {
   elite: "💀",
   shop: "🛒",
   rest: "🔥",
+  event: "❓",
+  treasure: "🎁",
   boss2: "👹",
   boss: "🐉",
 };
 
+export const NODE_LABEL: Record<NodeType, string> = {
+  battle: "战斗",
+  elite: "精英",
+  shop: "商店",
+  rest: "休息",
+  event: "事件",
+  treasure: "宝箱",
+  boss2: "中层BOSS",
+  boss: "BOSS",
+};
+
 export const MAP_ROWS = 15;
 
-/** Generate a 15-row map matching ref/pokedriver/js/game.js genMap exactly. */
+/** Generate a 15-row map with event/treasure mid-floor weights. */
 export function genMap(): MapNode[][] {
   const ROWS = MAP_ROWS;
   const rows: MapNode[][] = [];
@@ -31,22 +44,21 @@ export function genMap(): MapNode[][] {
       else if (f === 7) type = "boss2";
       else if (f === 0) type = "battle";
       else {
+        // battle 0.48 / elite 0.12 / shop 0.12 / rest 0.12 / event 0.08 / treasure 0.08
         const roll = Math.random();
-        type =
-          roll < 0.6
-            ? "battle"
-            : roll < 0.76
-              ? "elite"
-              : roll < 0.88
-                ? "shop"
-                : "rest";
+        if (roll < 0.48) type = "battle";
+        else if (roll < 0.6) type = "elite";
+        else if (roll < 0.72) type = "shop";
+        else if (roll < 0.84) type = "rest";
+        else if (roll < 0.92) type = "event";
+        else type = "treasure";
       }
       return { c, type, edges: [], x: 0, y: 0, done: false };
     });
     rows.push(row);
   }
 
-  // Ensure at least 2 rest + 2 shop (original ensures rest:2 shop:2)
+  // Ensure at least 2 rest + 2 shop
   type FlatNode = MapNode & { _in?: number };
   const flats: FlatNode[] = [];
   rows.forEach((row, f) => {

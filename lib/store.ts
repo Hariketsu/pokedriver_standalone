@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { GAME_CONST } from "@/data";
+import { GAME_CONST, POKEMON, QUESTIONS, PKMN_ICONS } from "@/data";
 import {
   applyEnemyHit,
   applyPlayerAttack,
@@ -20,8 +20,15 @@ import {
   usePotion,
 } from "./battle";
 import {
+  applyTreasureRewards,
+  getEventById,
+  pickEvent,
+  rollTreasureRewards,
+} from "./events";
+import {
   calcScore,
   grantXpTo,
+  metaUpgradeCost,
   newInstance,
   PKMN_BY_ID,
   pokeMaxHp,
@@ -44,6 +51,7 @@ import type {
   ShopItemId,
   StarterDef,
   ToastState,
+  TreasureReward,
 } from "./types";
 
 export const META_KEY = "pd_meta_v1";
@@ -67,7 +75,65 @@ function defaultMeta(): MetaState {
     totalCaught: 0,
     wrongQ: {},
     settings: { bgm: 0.6, sfx: 0.8, shake: true, diff: "normal" },
+    metaGold: 0,
+    metaAtkLv: 0,
+    metaHpLv: 0,
   };
+}
+
+/** Normalize any raw meta blob (missing new fields default safely). */
+export function normalizeMeta(
+  raw: Partial<MetaState> | null | undefined,
+): MetaState {
+  const base = defaultMeta();
+  if (!raw || !raw.settings) return base;
+  return {
+    ...base,
+    ...raw,
+    settings: { ...base.settings, ...raw.settings },
+    dex: raw.dex ?? {},
+    wrongQ: raw.wrongQ ?? {},
+    metaGold: Number.isFinite(raw.metaGold) ? (raw.metaGold as number) : 0,
+    metaAtkLv: Number.isFinite(raw.metaAtkLv) ? (raw.metaAtkLv as number) : 0,
+    metaHpLv: Number.isFinite(raw.metaHpLv) ? (raw.metaHpLv as number) : 0,
+  };
+}
+
+type RawRun = Partial<RunState> & {
+  superBalls?: number;
+  greatBalls?: number;
+  ultraBalls?: number;
+  masterBalls?: number;
+};
+
+/** Normalize any raw run blob; dual-read superBalls → greatBalls. */
+export function normalizeRun(raw: RawRun | null | undefined): RunState | null {
+  if (!raw || !raw.mapRows) return null;
+  const greatBalls = raw.greatBalls ?? raw.superBalls ?? 0;
+  const ultraBalls = raw.ultraBalls ?? 0;
+  const masterBalls = raw.masterBalls ?? 0;
+  return {
+    ...(raw as RunState),
+    greatBalls,
+    ultraBalls,
+    masterBalls,
+    superBalls: greatBalls,
+  };
+}
+
+function assertDataReady(): { ok: boolean; error: string | null } {
+  if (POKEMON.length !== GAME_CONST.POKEMON_COUNT) {
+    return {
+      ok: false,
+      error: `宝可梦数据异常（${POKEMON.length}/${GAME_CONST.POKEMON_COUNT}）`,
+    };
+  }
+  if (QUESTIONS.length < GAME_CONST.MIN_QUESTION_BANK) {
+    return { ok: false, error: `题库不足（${QUESTIONS.length} 题）` };
+  }
+  // soft: icons not required for boot
+  void PKMN_ICONS;
+  return { ok: true, error: null };
 }
 
 function loadMetaFromStorage(): MetaState {
@@ -75,8 +141,8 @@ function loadMetaFromStorage(): MetaState {
   try {
     const raw = localStorage.getItem(META_KEY);
     if (!raw) return defaultMeta();
-    const m = JSON.parse(raw) as MetaState;
-    return m && m.settings ? m : defaultMeta();
+    const m = JSON.parse(raw) as Partial<MetaState>;
+    return normalizeMeta(m);
   } catch {
     return defaultMeta();
   }
@@ -96,8 +162,8 @@ function loadRunFromStorage(): RunState | null {
   try {
     const raw = localStorage.getItem(RUN_KEY);
     if (!raw) return null;
-    const r = JSON.parse(raw) as RunState;
-    return r && r.mapRows ? r : null;
+    const r = JSON.parse(raw) as RawRun;
+    return normalizeRun(r);
   } catch {
     return null;
   }
@@ -106,8 +172,11 @@ function loadRunFromStorage(): RunState | null {
 function saveRunToStorage(run: RunState | null): void {
   if (typeof window === "undefined") return;
   try {
-    if (run) localStorage.setItem(RUN_KEY, JSON.stringify(run));
-    else localStorage.removeItem(RUN_KEY);
+    if (run) {
+      // dual-write legacy superBalls for rollback safety
+      const payload = { ...run, superBalls: run.greatBalls };
+      localStorage.setItem(RUN_KEY, JSON.stringify(payload));
+    } else localStorage.removeItem(RUN_KEY);
   } catch {
     /* ignore */
   }
@@ -167,6 +236,12 @@ type GameStore = {
   lastAnswer: AnswerResult | null;
   lastCapture: CaptureResult | null;
   hydrated: boolean;
+  dataReady: boolean;
+  bootError: string | null;
+  /** Active event id while event modal is open. */
+  activeEventId: string | null;
+  /** Pending treasure rewards shown in modal (already applied). */
+  lastTreasure: TreasureReward[] | null;
 
   /* ---- persistence ---- */
   hydrate: () => void;
@@ -186,6 +261,14 @@ type GameStore = {
   markSeen: (id: number, caught: boolean) => void;
   updateSettings: (partial: Partial<Settings>) => void;
   wipeAll: () => void;
+  buyMetaAtk: () => boolean;
+  buyMetaHp: () => boolean;
+  /** Exam: increment wrongQ fail counts (no auto-clear on correct). */
+  recordExamWrongs: (wrongIds: string[]) => void;
+  /** Wrong-book study: remove a mastered id. */
+  clearWrongQ: (id: string) => void;
+  /** Wrong-book study: decrement fail count, delete at 0. */
+  decrementWrongQ: (id: string) => void;
 
   /* ---- run lifecycle ---- */
   newRun: (starterId: number) => void;
@@ -195,6 +278,11 @@ type GameStore = {
 
   /* ---- map ---- */
   moveTo: (f: number, i: number) => void;
+  openTreasure: () => void;
+  claimTreasure: () => void;
+  openEvent: () => void;
+  resolveEventChoice: (choiceIndex: number) => void;
+  dismissEventOrTreasure: () => void;
 
   /* ---- shop / rest ---- */
   openShop: () => void;
@@ -245,11 +333,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
   lastAnswer: null,
   lastCapture: null,
   hydrated: false,
+  dataReady: false,
+  bootError: null,
+  activeEventId: null,
+  lastTreasure: null,
 
   hydrate: () => {
     if (get().hydrated) return;
     const meta = loadMetaFromStorage();
-    set({ meta, hydrated: true });
+    const assert = assertDataReady();
+    set({
+      meta,
+      hydrated: true,
+      dataReady: assert.ok,
+      bootError: assert.error,
+    });
   },
 
   loadMeta: () => {
@@ -278,7 +376,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   openModal: (modal) => set({ modal }),
 
-  closeModal: () => set({ modal: null }),
+  closeModal: () => {
+    const m = get().modal;
+    // Force-skip unfinished event/treasure without re-grant (node already done).
+    if (m?.kind === "event" || m?.kind === "treasure") {
+      set({ modal: null, activeEventId: null, lastTreasure: null });
+      return;
+    }
+    set({ modal: null });
+  },
 
   markSeen: (id, caught) => {
     const meta = cloneMeta(get().meta);
@@ -314,7 +420,75 @@ export const useGameStore = create<GameStore>((set, get) => ({
       modal: null,
       shopStock: [],
       gameOver: null,
+      activeEventId: null,
+      lastTreasure: null,
     });
+    saveMetaToStorage(meta);
+  },
+
+  buyMetaAtk: () => {
+    const meta = cloneMeta(get().meta);
+    if (meta.metaAtkLv >= GAME_CONST.MAX_META_ATK_LV) {
+      get().showToast("攻击等级已满");
+      return false;
+    }
+    const cost = metaUpgradeCost(meta.metaAtkLv);
+    if (meta.metaGold < cost) {
+      get().showToast("养成金币不足");
+      return false;
+    }
+    meta.metaGold -= cost;
+    meta.metaAtkLv += 1;
+    set({ meta });
+    saveMetaToStorage(meta);
+    get().showToast(`攻击养成 Lv.${meta.metaAtkLv}`);
+    return true;
+  },
+
+  buyMetaHp: () => {
+    const meta = cloneMeta(get().meta);
+    if (meta.metaHpLv >= GAME_CONST.MAX_META_HP_LV) {
+      get().showToast("生命等级已满");
+      return false;
+    }
+    const cost = metaUpgradeCost(meta.metaHpLv);
+    if (meta.metaGold < cost) {
+      get().showToast("养成金币不足");
+      return false;
+    }
+    meta.metaGold -= cost;
+    meta.metaHpLv += 1;
+    set({ meta });
+    saveMetaToStorage(meta);
+    get().showToast(`生命养成 Lv.${meta.metaHpLv}`);
+    return true;
+  },
+
+  recordExamWrongs: (wrongIds) => {
+    if (!wrongIds.length) return;
+    const meta = cloneMeta(get().meta);
+    for (const id of wrongIds) {
+      meta.wrongQ[id] = (meta.wrongQ[id] || 0) + 1;
+    }
+    set({ meta });
+    saveMetaToStorage(meta);
+  },
+
+  clearWrongQ: (id) => {
+    const meta = cloneMeta(get().meta);
+    if (meta.wrongQ[id] === undefined) return;
+    delete meta.wrongQ[id];
+    set({ meta });
+    saveMetaToStorage(meta);
+  },
+
+  decrementWrongQ: (id) => {
+    const meta = cloneMeta(get().meta);
+    const cur = meta.wrongQ[id];
+    if (!cur) return;
+    if (cur <= 1) delete meta.wrongQ[id];
+    else meta.wrongQ[id] = cur - 1;
+    set({ meta });
     saveMetaToStorage(meta);
   },
 
@@ -322,20 +496,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const meta = cloneMeta(get().meta);
     meta.runs++;
 
+    const atkBonus = meta.metaAtkLv * GAME_CONST.ATK_PER_META_LV;
+    const hpBonus = meta.metaHpLv * GAME_CONST.HP_PER_META_LV;
+
     const run: RunState = {
       mapRows: genMap(),
       pos: { f: -1, i: -1 },
       gold: 60,
       goldEarned: 0,
       balls: 5,
+      greatBalls: 1,
+      ultraBalls: 0,
+      masterBalls: 0,
       superBalls: 1,
       potions: 1,
       bigPotions: 0,
       teamPotions: 0,
       revives: 0,
-      atkBonus: 0,
-      hpBonus: 0,
-      team: [newInstance(starterId, 1, 0)],
+      atkBonus,
+      hpBonus,
+      team: [newInstance(starterId, 1, hpBonus)],
       activeIdx: 0,
       usedQ: {},
       combo: 0,
@@ -364,6 +544,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameOver: null,
       modal: null,
       shopStock: [],
+      activeEventId: null,
+      lastTreasure: null,
     });
     saveMetaToStorage(meta);
     saveRunToStorage(run);
@@ -382,6 +564,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       prevScreen: get().screen,
       gameOver: null,
       modal: null,
+      activeEventId: null,
+      lastTreasure: null,
     });
     return true;
   },
@@ -407,6 +591,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const run = cloneRun(run0);
     const node = run.mapRows[f]![i]!;
     run.pos = { f, i };
+    // Mark done before opening so refresh cannot re-grant event/treasure.
     node.done = true;
     run.floorsCleared = f + 1;
     set({ run });
@@ -416,14 +601,93 @@ export const useGameStore = create<GameStore>((set, get) => ({
       get().openShop();
     } else if (node.type === "rest") {
       get().openRest();
+    } else if (node.type === "treasure") {
+      get().openTreasure();
+    } else if (node.type === "event") {
+      get().openEvent();
     } else {
       get().startBattle(node);
     }
   },
 
-  openShop: () => {
+  openTreasure: () => {
+    const run0 = get().run;
+    if (!run0) return;
+    // Roll only — apply on claimTreasure so dismiss skips rewards.
+    const rewards = rollTreasureRewards(run0.pos.f + 1);
+    set({
+      lastTreasure: rewards,
+      modal: { kind: "treasure", rewards },
+      screen: "map",
+    });
+  },
+
+  claimTreasure: () => {
+    const run0 = get().run;
+    const rewards = get().lastTreasure;
+    if (!run0 || !rewards?.length) {
+      set({ modal: null, lastTreasure: null });
+      return;
+    }
+    const run = cloneRun(run0);
+    const summary = applyTreasureRewards(run, rewards);
+    set({
+      run,
+      modal: null,
+      lastTreasure: null,
+      screen: "map",
+    });
+    saveRunToStorage(run);
+    if (summary) get().showToast(summary);
+  },
+
+  openEvent: () => {
     if (!get().run) return;
-    const stock = rollShopStock();
+    const evt = pickEvent();
+    set({
+      activeEventId: evt.id,
+      modal: { kind: "event", eventId: evt.id },
+      screen: "map",
+    });
+  },
+
+  resolveEventChoice: (choiceIndex) => {
+    const run0 = get().run;
+    const eventId = get().activeEventId;
+    if (!run0 || !eventId) {
+      set({ modal: null, activeEventId: null });
+      return;
+    }
+    const evt = getEventById(eventId);
+    const choice = evt?.choices[choiceIndex];
+    if (!choice) {
+      set({ modal: null, activeEventId: null });
+      return;
+    }
+    const run = cloneRun(run0);
+    const meta = cloneMeta(get().meta);
+    const res = choice.apply(run, meta);
+    set({
+      run,
+      meta,
+      modal: null,
+      activeEventId: null,
+      screen: "map",
+    });
+    saveRunToStorage(run);
+    saveMetaToStorage(meta);
+    if (res.toast) get().showToast(res.toast);
+  },
+
+  dismissEventOrTreasure: () => {
+    // Force skip: no reward if treasure not claimed / event not chosen.
+    set({ modal: null, activeEventId: null, lastTreasure: null });
+  },
+
+  openShop: () => {
+    const run = get().run;
+    if (!run) return;
+    const stock = rollShopStock(run);
     set({
       shopStock: stock,
       screen: "shop",
@@ -852,6 +1116,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const isRecord = score > meta.bestScore;
     if (isRecord) meta.bestScore = score;
     if (win) meta.wins++;
+    const bankedMetaGold = Math.floor(run.gold * GAME_CONST.BANK_RATIO);
+    meta.metaGold += bankedMetaGold;
     saveMetaToStorage(meta);
 
     const minutes = Math.max(
@@ -869,6 +1135,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       maxCombo: run.maxCombo,
       captures: run.captures,
       minutes,
+      bankedMetaGold,
     };
 
     set({
@@ -879,6 +1146,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       screen: "over",
       prevScreen: get().screen,
       modal: null,
+      activeEventId: null,
+      lastTreasure: null,
     });
     saveRunToStorage(null);
   },
@@ -892,6 +1161,13 @@ export function selectScore(s: { run: RunState | null }): number {
 export function selectActive(s: { run: RunState | null }) {
   if (!s.run) return null;
   return s.run.team[s.run.activeIdx] ?? null;
+}
+
+export function selectReady(s: {
+  hydrated: boolean;
+  dataReady: boolean;
+}): boolean {
+  return s.hydrated && s.dataReady;
 }
 
 export type { Difficulty, ShopItemId, RestOptionId, BallType };

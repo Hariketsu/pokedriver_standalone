@@ -5,7 +5,7 @@ import {
   type Pokemon,
   type Rarity,
 } from "@/data";
-import type { RunState, TeamMember } from "./types";
+import type { BallType, RunState, TeamMember } from "./types";
 
 export const RARITY_LABEL = GAME_RULES.rarity_labels;
 export const RARITY_CSS: Record<Rarity, string> = {
@@ -98,8 +98,21 @@ export function calcScore(run: RunState | null | undefined): number {
   );
 }
 
-export function catchChance(rarity: Rarity, ball: "normal" | "super"): number {
-  return clamp(CATCH_BASE[rarity] * (ball === "super" ? 1.6 : 1), 0, 0.95);
+export const BALL_MULT: Record<BallType, number> = {
+  normal: 1.0,
+  great: 1.6,
+  ultra: 2.2,
+  master: Infinity,
+};
+
+export function catchChance(rarity: Rarity, ball: BallType): number {
+  if (ball === "master") return 1;
+  return clamp(CATCH_BASE[rarity] * BALL_MULT[ball], 0, 0.98);
+}
+
+/** Cost to buy next meta train level (0-based current lv). */
+export function metaUpgradeCost(lv: number): number {
+  return GAME_CONST.UPGRADE_BASE_COST + lv * GAME_CONST.UPGRADE_COST_STEP;
 }
 
 /** Apply XP to active mon; returns levels gained. Mutates inst. */

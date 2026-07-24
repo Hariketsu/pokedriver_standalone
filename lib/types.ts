@@ -27,6 +27,10 @@ export type MetaState = {
   totalCaught: number;
   wrongQ: Record<string, number>;
   settings: Settings;
+  /** Banked after run end; spent in Train screen. */
+  metaGold: number;
+  metaAtkLv: number;
+  metaHpLv: number;
 };
 
 export type TeamMember = {
@@ -36,7 +40,15 @@ export type TeamMember = {
   hp: number;
 };
 
-export type NodeType = "battle" | "elite" | "shop" | "rest" | "boss" | "boss2";
+export type NodeType =
+  | "battle"
+  | "elite"
+  | "shop"
+  | "rest"
+  | "event"
+  | "treasure"
+  | "boss"
+  | "boss2";
 
 export type MapNode = {
   c: number;
@@ -58,6 +70,14 @@ export type RunState = {
   gold: number;
   goldEarned: number;
   balls: number;
+  /** Canonical great-ball inventory. */
+  greatBalls: number;
+  ultraBalls: number;
+  masterBalls: number;
+  /**
+   * Legacy mirror of greatBalls for older builds.
+   * Always kept === greatBalls after normalize / save dual-write.
+   */
   superBalls: number;
   potions: number;
   bigPotions: number;
@@ -112,9 +132,14 @@ export type ScreenId =
   | "dex"
   | "review"
   | "settings"
-  | "over";
+  | "over"
+  | "event"
+  | "treasure"
+  | "train"
+  | "exam"
+  | "wrong";
 
-export type BallType = "normal" | "super";
+export type BallType = "normal" | "great" | "ultra" | "master";
 
 export type RestOptionId = "campfire" | "train" | "meditate";
 
@@ -123,11 +148,15 @@ export type ShopItemId =
   | "bigPotion"
   | "teamSpray"
   | "balls"
-  | "superBalls"
+  | "greatBalls"
+  | "ultraBalls"
+  | "masterBall"
   | "atkBadge"
   | "hpOrb"
   | "revive"
-  | "xpBook";
+  | "xpBook"
+  /** @deprecated legacy id accepted only during apply */
+  | "superBalls";
 
 export type ShopItemDef = {
   id: ShopItemId;
@@ -154,6 +183,7 @@ export type GameOverInfo = {
   maxCombo: number;
   captures: number;
   minutes: number;
+  bankedMetaGold: number;
 };
 
 export type ToastState = {
@@ -161,6 +191,21 @@ export type ToastState = {
   ms: number;
   id: number;
 } | null;
+
+export type TreasureRewardKind =
+  | "gold"
+  | "balls"
+  | "greatBalls"
+  | "ultraBalls"
+  | "potion"
+  | "xp";
+
+export type TreasureReward = {
+  kind: TreasureRewardKind;
+  amount: number;
+  label: string;
+  icon: string;
+};
 
 /** Structured modal payloads for UI (no ReactNode in store). */
 export type ModalState =
@@ -170,6 +215,8 @@ export type ModalState =
   | { kind: "confirmWipe" }
   | { kind: "team" }
   | { kind: "dexDetail"; id: number }
+  | { kind: "treasure"; rewards: TreasureReward[] }
+  | { kind: "event"; eventId: string }
   | null;
 
 export type BattleFxEvent =

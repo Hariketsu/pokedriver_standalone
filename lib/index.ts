@@ -20,6 +20,8 @@ export {
   calcScore,
   catchChance,
   grantXpTo,
+  BALL_MULT,
+  metaUpgradeCost,
   GAME_CONST,
   GAME_RULES,
   POKEMON,
@@ -27,11 +29,21 @@ export {
 
 export {
   NODE_ICON,
+  NODE_LABEL,
   MAP_ROWS,
   genMap,
   isCurrentNode,
   isReachable,
 } from "./map";
+
+export {
+  pickEvent,
+  getEventById,
+  rollTreasureRewards,
+  applyTreasureRewards,
+} from "./events";
+
+export type { EventDef, EventChoice } from "./events";
 
 export {
   enemyForNode,
@@ -63,7 +75,27 @@ export {
   STARTERS,
   selectScore,
   selectActive,
+  selectReady,
+  normalizeMeta,
+  normalizeRun,
 } from "./store";
+
+export {
+  EXAM_Q_COUNT,
+  EXAM_DURATION_MS,
+  EXAM_PASS_SCORE,
+  sampleExamQuestions,
+  canStartExam,
+  createExamSession,
+  formatMmSs,
+  examRemainingMs,
+  countAnswered,
+  scoreExam,
+  listWrongQuestions,
+  sampleWrongPool,
+} from "./exam";
+
+export type { ExamPhase, ExamSession, ExamResultItem } from "./exam";
 
 export type {
   AnswerResult,
