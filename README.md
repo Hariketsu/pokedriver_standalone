@@ -2,6 +2,10 @@
 
 Slay the Spire 式答题爬塔：一边答驾考题，一边组队打宝可梦。手机浏览器可玩，进度本地保存。
 
+> **两个版本**：本仓库包含同一游戏的两套实现——
+> - **Next.js 版**（根目录）：TypeScript + React 19 + Three.js，需构建，支持部署到 Vercel
+> - **Standalone 版**（[`standalone/`](standalone/)）：纯原生 HTML/CSS/JS，零依赖，浏览器直接打开即玩
+
 ## 玩法
 
 - **地图爬塔**：15 层节点地图（普通战 / 精英 / 商店 / 休息 / 中层 BOSS / 终局 BOSS）
@@ -94,6 +98,79 @@ npm start
 npm run build
 npx vercel --prod   # 或其他静态/Node 托管
 ```
+
+## Standalone 版（原生 JS）
+
+`standalone/` 目录包含完整的原生 JavaScript 实现——**无需 npm install、无需构建、无需任何工具链**。用浏览器打开 `standalone/index.html` 即可直接游玩。
+
+### 与 Next.js 版的差异
+
+| 维度 | Next.js 版 | Standalone 版 |
+|------|-----------|---------------|
+| 语言 | TypeScript + React 19 | 原生 JavaScript (ES6+) |
+| 构建 | `npm run build` | 无需构建 |
+| 3D | Three.js | 无 3D（纯 DOM/CSS 动画） |
+| 模块化 | 组件化 + Zustand 状态管理 | 多文件脚本 + 全局状态对象 |
+| UI 样式 | React 组件 + globals.css | 单 CSS 文件 |
+| 题库 | 1034 题 (JSON) | 1034 题 (JS 变量) |
+| 宝可梦 | 721 只 (JSON) | 1010 只 (JS 变量) |
+| 地图 | 固定 15 层 | 无限闯关 |
+| 卡片系统 | 无 | 技能卡片 / 牌组构建 |
+| 养成系统 | 无 | 养成金币 / HP-ATK 升级 |
+| 数据文件 | `data/*.json` | `data/data_*.js` |
+
+### Standalone 项目结构
+
+```
+standalone/
+├── index.html              # 入口 HTML
+├── css/
+│   └── style.css           # 全部样式
+├── data/
+│   ├── data_pokemon.js     # 宝可梦数据
+│   ├── data_questions.js   # 题库
+│   ├── data_bst.js         # 种族值
+│   ├── data_icon_files.js  # 图标文件名映射
+│   └── data_icons_hd.js    # 图标 base64
+├── js/
+│   ├── game.js             # 核心：常量/状态/地图/存档
+│   ├── battle.js           # 战斗：音频/卡片/牌组/商店
+│   ├── screens.js          # 界面：粒子/图鉴/题库/设置
+│   └── main.js             # 入口：事件绑定/游戏循环/初始化
+└── lib/                    # 预留外部库
+```
+
+### Standalone 独有玩法
+
+相比 Next.js 版，Standalone 版新增了以下系统：
+
+**🃏 技能卡片与牌组构建**
+- 战斗中通过答题积攒能量，消耗能量打出攻击/防御/恢复/控制/异常 5 类技能卡
+- 战后可获取新卡；在「构建牌组」页面自由编辑 12 张出战卡组
+- 卡片按稀有度分级（普通/稀有/超稀有/传说），通过养成抽卡获得
+
+**🧬 全局养成系统**
+- 跨局积累养成金币，永久升级 HP（+3/级）和攻击力（+1/级）
+- 抽卡系统：消耗养成金币随机获得技能卡片，稀有度越高越难出
+- 已拥有的宝可梦和卡片跨局保留（localStorage `dungeonDrive_*`）
+
+**🗺️ 无限闯关**
+- 地图层数不再设限，每击败 BOSS 进入更深层，难度递增
+- Slay the Spire 式节点路径：每层只能选一个节点前进，不可回头
+
+**📖 图鉴与筛选**
+- 收录 1010 只宝可梦，支持按稀有度、已收集/未解锁筛选
+- 只有成功捕获的宝可梦才会解锁图鉴条目（击败不自动解锁）
+
+### 开发说明
+
+Standalone 版从原始 4300+ 行单文件 HTML 拆分而来，结构参考了 `ref/pokedriver/`。修改 JS 时注意**加载顺序**：
+
+```
+data/*.js → game.js → battle.js → screens.js → main.js
+```
+
+`game.js` 定义全局 `$()`、`GS` 状态、常量；后续文件依赖这些全局变量。所有脚本均为经典 `<script>` 标签（非 module），共享全局作用域。
 
 ## 参考实现
 
