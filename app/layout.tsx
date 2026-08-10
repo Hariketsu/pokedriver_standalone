@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
+
+const fusionPixel = localFont({
+  src: "./fonts/fusion-pixel-12px.woff2",
+  variable: "--font-pixel",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -22,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={fusionPixel.variable}>
       <body>{children}</body>
     </html>
   );
