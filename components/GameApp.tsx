@@ -154,7 +154,10 @@ export default function GameApp() {
         <div id="shake-wrap">
           <section className="screen active" id="scr-title">
             <div className="title-bg">
-              <img className="title-bg-img" src="/art/hero-bg.png" alt="" />
+              <picture>
+                <source media="(min-width:768px)" srcSet="/art/bg-16-9.png" />
+                <img className="title-bg-img" src="/art/hero-bg.png" alt="" />
+              </picture>
               <div className="title-shade" />
             </div>
             <div className="title-inner">

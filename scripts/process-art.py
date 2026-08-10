@@ -218,9 +218,17 @@ def process_cutouts2() -> None:
         print(f"{name:18s}<- {f.name[26:40]} -> {im.size}")
 
 
+def process_wide_bg() -> None:
+    """Landscape outpainted hero for desktop; copied verbatim (no keying)."""
+    src = ART / "bg-16-9-raw.png"
+    Image.open(src).convert("RGB").save(ART / "bg-16-9.png")
+    print(f"bg-16-9        <- {src.name} {Image.open(src).size}")
+
+
 if __name__ == "__main__":
     archive_kimi()  # capture kimi originals (cleaned) before overwriting
     process_gpt()
     process_cutouts()
     process_cutouts2()
+    process_wide_bg()
     print("done")
