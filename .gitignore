@@ -40,12 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# large raw archives (keep local only)
-ref/raw/*.zip
 **/.DS_Store
 
-# nested clone / large archives (local reference only)
-ref/driving-test-subject1/
-
-# nested local scrapers / clones (not part of the app)
-ref/DriverLicenseQuestionsSpider/
+# local reference & scratch dirs — keep out of the open-source repo
+/ref/
+/public/
