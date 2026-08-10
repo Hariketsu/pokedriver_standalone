@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pillow>=11", "numpy>=2"]
+# dependencies = ["pillow>=11", "numpy>=2", "scipy>=1.14"]
 # ///
 """Process AI-generated art assets for the homepage.
 
@@ -20,6 +20,7 @@ source of truth for deriving the assets.
 from pathlib import Path
 
 import numpy as np
+import scipy.ndimage as ndi
 from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -120,6 +121,9 @@ def delogo_fill(im: Image.Image) -> Image.Image:
 
 
 def archive_kimi() -> None:
+    if KIMI_RAW.exists() and any(KIMI_RAW.iterdir()):
+        print("kimi-gen-raw already archived, skipping")
+        return
     KIMI_RAW.mkdir(exist_ok=True)
     for f in sorted(ART.glob("*.png")):
         if f.stem == "hero-bg":
@@ -130,7 +134,93 @@ def archive_kimi() -> None:
         print(f"archive kimi-gen-raw/{f.name}")
 
 
+CUTOUT_DIR = ART / "gpt-cutout-homepage"
+CUTOUT2_DIR = ART / "gpt-cutout-homepage-2"
+
+# source filename prefix -> (target, keep mode)
+# "largest"  = keep only the biggest connected component (subject; kills stray beams)
+# "ratio"    = keep components >= 2% of the largest (logo = several legit plates)
+# "floor"    = keep components >= 50 px absolute (kills dust specks, keeps parts)
+CUTOUT_MAP = {
+    "01_标题": ("ui-logo", "ratio"),
+    "02_右上角": ("ui-settings", "ratio"),
+    "03_精灵_左": ("starter-volt", "largest"),
+    "04_精灵_中": ("starter-leaf", "largest"),
+    "05_精灵_右": ("starter-cloud", "largest"),
+}
+
+CUTOUT2_MAP = {
+    "01_41_15": ("ui-plate-blue", None),
+    "01_41_16 AM (3)": ("ui-plate-green", None),
+    "01_41_16 AM (4)": ("ui-plate-blue-alt", None),
+    "01_41_17 AM (5)": ("ui-plate-purple", None),
+    "01_41_17 AM (6)": ("ui-plate-gold", None),
+    "01_41_18": ("icon-dex", 256),
+    "01_41_19 AM (8)": ("icon-study", 256),
+    "01_41_19 AM (9)": ("icon-train", 256),
+    "01_41_20": ("icon-settings", 256),
+    "01_43_47": ("ui-play", None),
+    "01_47_05": ("ui-plate-gold-long", None),
+}
+
+
+def clean_components(arr: np.ndarray, mode: str) -> np.ndarray:
+    """Remove disconnected cutout residue via connected-component analysis."""
+    a = arr[..., 3]
+    labels, n = ndi.label(a > 40)
+    if n <= 1:
+        return arr
+    sizes = np.bincount(labels.ravel())
+    sizes[0] = 0
+    largest = int(sizes.argmax())
+    if mode == "largest":
+        keep_ids = [largest]
+    elif mode == "floor":
+        keep_ids = [i for i in range(1, n + 1) if sizes[i] >= 50]
+    else:
+        keep_ids = [i for i in range(1, n + 1) if sizes[i] >= sizes[largest] * 0.02]
+    keep = np.isin(labels, keep_ids)
+    removed = n - len(keep_ids)
+    arr[..., 3] = np.where(keep, a, 0)
+    print(f"   removed {removed} residue components")
+    return arr
+
+
+def process_cutouts() -> None:
+    """Clean GPT-cutout homepage assets (stray fragments) and install them."""
+    for f in sorted(CUTOUT_DIR.iterdir()):
+        hit = next((v for k, v in CUTOUT_MAP.items() if f.name.startswith(k)), None)
+        if not hit:
+            continue
+        name, mode = hit
+        arr = np.array(Image.open(f).convert("RGBA"))
+        arr = clean_components(arr, mode)
+        im = Image.fromarray(trim(arr, pad=2), "RGBA")
+        im.save(ART / f"{name}.png")
+        print(f"{name:15s}<- {f.name[:28]} mode={mode:7s} -> {im.size}")
+
+
+def process_cutouts2() -> None:
+    """Clean button plates / icons from batch 2 (dust specks via 50px floor)."""
+    for f in sorted(CUTOUT2_DIR.iterdir()):
+        if not f.name.endswith(".png"):
+            continue
+        hit = next((v for k, v in CUTOUT2_MAP.items() if k in f.name), None)
+        if not hit:
+            continue
+        name, max_dim = hit
+        arr = np.array(Image.open(f).convert("RGBA"))
+        arr = clean_components(arr, "floor")
+        im = Image.fromarray(trim(arr, pad=3), "RGBA")
+        if max_dim:
+            im = resize_max(im, max_dim)
+        im.save(ART / f"{name}.png")
+        print(f"{name:18s}<- {f.name[26:40]} -> {im.size}")
+
+
 if __name__ == "__main__":
     archive_kimi()  # capture kimi originals (cleaned) before overwriting
     process_gpt()
+    process_cutouts()
+    process_cutouts2()
     print("done")

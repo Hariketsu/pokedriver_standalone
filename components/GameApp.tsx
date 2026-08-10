@@ -159,8 +159,11 @@ export default function GameApp() {
             </div>
             <div className="title-inner">
               <div className="title-logo">
-                <div className="logo-top">宝可驾</div>
-                <div className="logo-sub">交 规 地 牢</div>
+                <img
+                  className="logo-img"
+                  src="/art/ui-logo.png"
+                  alt="宝可驾 · 交规地牢"
+                />
               </div>
               <div id="boot-gate" className="boot-gate">
                 {bootError ? (

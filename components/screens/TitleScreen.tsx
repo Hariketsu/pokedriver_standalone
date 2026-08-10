@@ -74,62 +74,50 @@ export default function TitleScreen() {
         aria-label="设置"
         onClick={() => go("settings")}
       >
-        ⚙
+        <img src="/art/ui-settings.png" alt="设置" />
       </button>
 
       <div className="title-inner">
         <div className="title-logo">
-          <div className="logo-top">宝可驾</div>
-          <div className="logo-sub">交规地牢</div>
-          <div className="logo-tag">答题爬塔 · 捕捉宝可梦 · 通关科目一</div>
+          <img className="logo-img" src="/art/ui-logo.png" alt="宝可驾 · 交规地牢" />
         </div>
 
         <div className="title-starters">
           {STARTERS.map((s) => (
             <img key={s.src} src={s.src} alt={s.alt} />
           ))}
-          <img className="title-strip" src="/art/strip-checkers.png" alt="" />
         </div>
 
         <div className="title-cta">
-          {saveExists ? (
-            <>
-              <button
-                className="btn btn-gold"
-                id="btn-continue"
-                onClick={onContinue}
-              >
-                <span className="btn-label">继续冒险</span>
-                {saveInfo && (
-                  <span className="btn-sub">
-                    第{saveInfo.floor}关 · 队伍{saveInfo.team} · 💰
-                    {saveInfo.gold}
-                  </span>
-                )}
-              </button>
-              <button
-                className="btn btn-blue"
-                id="btn-start"
-                onClick={onPrimaryStart}
-              >
-                新的冒险
-              </button>
-            </>
-          ) : (
+          {saveExists && (
             <button
-              className="btn btn-gold"
-              id="btn-start"
-              onClick={onPrimaryStart}
+              className="btn-plate"
+              id="btn-continue"
+              onClick={onContinue}
             >
-              开始冒险
+              <img className="bp-bg" src="/art/ui-plate-gold-long.png" alt="" />
+              <span className="bp-label bp-label-dark">
+                <img className="bp-play" src="/art/ui-play.png" alt="" />
+                继续冒险
+              </span>
+              {saveInfo && (
+                <span className="bp-sub">
+                  第 {saveInfo.floor} 关 · 队伍 {saveInfo.team} · 金币{" "}
+                  {saveInfo.gold}
+                </span>
+              )}
             </button>
           )}
+          <button className="btn-plate" id="btn-start" onClick={onPrimaryStart}>
+            <img className="bp-bg" src="/art/ui-plate-blue.png" alt="" />
+            <span className="bp-label">新的冒险</span>
+          </button>
         </div>
 
         <div className="title-grid-nav" aria-label="次要功能">
           <button
             type="button"
-            className="title-nav-card"
+            className="title-nav-card tnc-dex"
             id="btn-dex"
             onClick={() => go("dex")}
           >
@@ -139,7 +127,7 @@ export default function TitleScreen() {
           </button>
           <button
             type="button"
-            className="title-nav-card"
+            className="title-nav-card tnc-study"
             id="btn-study"
             onClick={() => go("study")}
           >
@@ -151,7 +139,7 @@ export default function TitleScreen() {
           </button>
           <button
             type="button"
-            className="title-nav-card"
+            className="title-nav-card tnc-train"
             id="btn-train"
             onClick={() => go("train")}
           >
@@ -161,7 +149,7 @@ export default function TitleScreen() {
           </button>
           <button
             type="button"
-            className="title-nav-card title-nav-card-dim"
+            className="title-nav-card tnc-settings"
             id="btn-settings-grid"
             onClick={() => go("settings")}
           >
@@ -171,13 +159,11 @@ export default function TitleScreen() {
           </button>
         </div>
 
-        <div className="title-stats" id="title-stats">
-          {meta.bestScore > 0 && <span>🏆 {meta.bestScore}</span>}
-          <span>📖 {caught}/721</span>
-          <span>💰 {metaGold}</span>
-        </div>
-        <div className="title-foot">
-          驾考题库 1034 题 · 宝可梦 721 只 · 仅供学习娱乐
+        <div className="title-foot" id="title-stats">
+          {meta.bestScore > 0 && <span>🏆 {meta.bestScore} · </span>}
+          <span>📖 图鉴 {caught}/721</span>
+          <span> · 💰 金币 {metaGold} · </span>
+          <span>驾考题库 1034 题 · 仅供学习娱乐</span>
         </div>
       </div>
     </section>
