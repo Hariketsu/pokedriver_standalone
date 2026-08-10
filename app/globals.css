@@ -78,22 +78,26 @@ body{
 .btn-plate{
   position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:100%;padding:0;border:none;background:none;cursor:pointer;
+  container-type:inline-size;
   transition:transform .12s,filter .12s;
 }
 .bp-bg{display:block;width:100%;height:auto}
 .btn-plate:active{transform:scale(.97);filter:brightness(1.18)}
-.bp-label{
-  position:absolute;left:0;right:0;top:50%;transform:translateY(-58%);
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  font-size:26px;font-weight:800;letter-spacing:4px;color:#fff;
-  text-shadow:0 2px 0 rgba(10,30,90,.55);
+/* label + 副标作为整体居中; 字号用 cqw 随按钮宽度等比缩放(设计稿比例) */
+.bp-content{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.4cqw;padding-bottom:3cqw;
 }
-.bp-label-dark{color:#4a2c00;text-shadow:0 1px 0 rgba(255,240,180,.5);font-size:30px}
-.bp-play{width:22px;height:auto}
+.bp-label{
+  display:flex;align-items:center;justify-content:center;gap:2.5cqw;
+  font-size:9cqw;font-weight:800;letter-spacing:1.2cqw;color:#fff;
+  text-shadow:0 .5cqw 0 rgba(10,30,90,.55);line-height:1.15;
+}
+.bp-label-dark{color:#4a2c00;text-shadow:0 .3cqw 0 rgba(255,240,180,.5);font-size:11cqw}
+.bp-play{width:6.5cqw;height:auto}
 .bp-sub{
-  position:absolute;left:0;right:0;top:50%;transform:translateY(42%);
-  font-size:12px;font-weight:700;letter-spacing:2px;color:#7a5206;
-  white-space:nowrap;
+  font-size:3.9cqw;font-weight:700;letter-spacing:.6cqw;color:#7a5206;
+  white-space:nowrap;line-height:1.15;
 }
 .btn-ghost{
   background:transparent;border:1px solid var(--line);color:var(--dim);
@@ -812,10 +816,6 @@ body{
   .title-starters img{height:9.5vh}
   .title-starters img:nth-child(2){height:11vh}
   .title-cta{width:min(44vh,460px);gap:1.6vh}
-  .bp-label{font-size:2.8vh;letter-spacing:.5vh;gap:1.2vh;top:24%;transform:none}
-  .bp-label-dark{font-size:3.1vh}
-  .bp-play{width:2.2vh}
-  .bp-sub{font-size:1.5vh;top:auto;bottom:10%;transform:none}
   .title-grid-nav{gap:1.1vh}
   .title-nav-card{padding:1.5vh .5vh 1.3vh;gap:.8vh;border-radius:1.6vh}
   .tnc-icon{width:5.2vh;height:5.2vh}

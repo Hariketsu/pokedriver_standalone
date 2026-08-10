@@ -99,21 +99,25 @@ export default function TitleScreen() {
               onClick={onContinue}
             >
               <img className="bp-bg" src="/art/ui-plate-gold-long.png" alt="" />
-              <span className="bp-label bp-label-dark">
-                <img className="bp-play" src="/art/ui-play.png" alt="" />
-                继续冒险
-              </span>
-              {saveInfo && (
-                <span className="bp-sub">
-                  第 {saveInfo.floor} 关 · 队伍 {saveInfo.team} · 金币{" "}
-                  {saveInfo.gold}
+              <span className="bp-content">
+                <span className="bp-label bp-label-dark">
+                  <img className="bp-play" src="/art/ui-play.png" alt="" />
+                  继续冒险
                 </span>
-              )}
+                {saveInfo && (
+                  <span className="bp-sub">
+                    第 {saveInfo.floor} 关 · 队伍 {saveInfo.team} · 金币{" "}
+                    {saveInfo.gold}
+                  </span>
+                )}
+              </span>
             </button>
           )}
           <button className="btn-plate" id="btn-start" onClick={onPrimaryStart}>
             <img className="bp-bg" src="/art/ui-plate-blue.png" alt="" />
-            <span className="bp-label">新的冒险</span>
+            <span className="bp-content">
+              <span className="bp-label">新的冒险</span>
+            </span>
           </button>
         </div>
 
