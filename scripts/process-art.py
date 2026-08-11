@@ -225,10 +225,132 @@ def process_wide_bg() -> None:
     print(f"bg-16-9        <- {src.name} {Image.open(src).size}")
 
 
+SHEET_DIR = ART / "gpt-gen-raw-0811"
+SHEET_DIR2 = ART / "gpt-gen-raw-8011-2"
+SHEET_OUT = ART / "ui"
+
+# (dir, file, cols, rows, cell names row-major; None = intentionally blank cell)
+# raw-09 (badges) dropped: gradient baked into semi-transparent alpha, unusable;
+# superseded by raw-21 in batch 2.
+SHEETS = [
+    (SHEET_DIR, "raw-01.png", 4, 4, [
+        "item-ball-red", "item-ball-blue", "item-ball-yellow", "item-ball-master",
+        "item-potion", "item-potion-super", "item-spray", "item-sword",
+        "item-heart", "item-revive", "item-book", "item-coin",
+        "item-campfire", "item-trophy", "item-skull", "item-star",
+    ]),
+    (SHEET_DIR, "raw-02.png", 2, 2, ["btn-navy", "btn-gold", "btn-ltblue", "btn-red"]),
+    (SHEET_DIR, "raw-03.png", 2, 2, ["opt-idle", "opt-correct", "opt-wrong", "opt-reveal"]),
+    (SHEET_DIR, "raw-04.png", 2, 2, ["panel-navy", "panel-navy-raised", "panel-purple", "panel-green"]),
+    (SHEET_DIR, "raw-05.png", 3, 3, [
+        "fill-hp-enemy", "fill-hp-player", "fill-hp-low",
+        "fill-timer", "fill-timer-low", "fill-hp-mini",
+        "fill-exp", None, None,
+    ]),
+    (SHEET_DIR, "raw-06.png", 3, 3, [
+        "chip-cyan", "hud-pill-gold", "btn-menu",
+        "btn-sound", "chip-silver", "bar-frame",
+        "bar-frame-cyan", "bar-frame-gray", "knob-gold",
+    ]),
+    (SHEET_DIR, "raw-07.png", 2, 3, [
+        "dex-frame-common", "dex-frame-uncommon",
+        "dex-frame-rare", "dex-frame-legendary",
+        "dex-frame-locked", None,
+    ]),
+    (SHEET_DIR, "raw-08.png", 2, 2, ["examdot-idle", "examdot-answered", "examdot-flagged", "examdot-current"]),
+    (SHEET_DIR2, "raw-21.png", 3, 3, [
+        "badge-combo", "badge-record", "stamp-pass",
+        "stamp-fail", "badge-caught", "badge-seen",
+        "toggle-on", "toggle-off", "icon-back",
+    ]),
+    (SHEET_DIR2, "raw-22.png", 3, 3, [
+        "page-head", "toast-strip", "input-field",
+        "slider-track", None, None,
+        None, None, None,
+    ]),
+]
+
+BG_MAP = {
+    (SHEET_DIR, "raw-10.png"): "bg-map",
+    (SHEET_DIR, "raw-11.png"): "bg-over-lose",
+    (SHEET_DIR, "raw-12.png"): "bg-rest",
+    (SHEET_DIR, "raw-13.png"): "bg-shop",
+    (SHEET_DIR, "raw-14.png"): "bg-over-win",
+    (SHEET_DIR, "raw-15.png"): "bg-battle",
+    (SHEET_DIR2, "raw-23.png"): "bg-map-16-9",
+    (SHEET_DIR2, "raw-24.png"): "bg-shop-16-9",
+    (SHEET_DIR2, "raw-25.png"): "bg-battle-16-9",
+    (SHEET_DIR2, "raw-26.png"): "bg-rest-16-9",
+    (SHEET_DIR2, "raw-27.png"): "bg-over-lose-16-9",
+    (SHEET_DIR2, "raw-28.png"): "bg-over-win-16-9",
+}
+
+
+def split_sheets() -> None:
+    """Cluster-based sheet split: label alpha components, assign each to its
+    nearest expected grid cell, union per cell, crop from the source.
+
+    Robust to ChatGPT grid drift, oversized items crossing nominal cell
+    bounds, and multi-part items (spray + droplets, medal + ribbons).
+    """
+    from scipy import ndimage
+
+    SHEET_OUT.mkdir(exist_ok=True)
+    for d, f, cols, rows, names in SHEETS:
+        arr = np.array(Image.open(d / f).convert("RGBA"))
+        H, W = arr.shape[:2]
+        cw, ch = W / cols, H / rows
+
+        # hard mask: >128 keeps solid pixel-art bodies, drops semi-transparent
+        # glow haze (which can carry baked background color)
+        labels, n = ndimage.label(arr[..., 3] > 128)
+        min_area = H * W * 0.0005  # dust filter
+        boxes = []  # (y0, y1, x0, x1) per significant component
+        for i, sl in enumerate(ndimage.find_objects(labels), start=1):
+            if sl is None or (labels[sl] == i).sum() < min_area:
+                continue
+            boxes.append((sl[0].start, sl[0].stop, sl[1].start, sl[1].stop))
+
+        # expected cell centers row-major -> name
+        cells = []
+        for i, name in enumerate(names):
+            if name is None:
+                continue
+            r, c = divmod(i, cols)
+            cells.append(((r + 0.5) * ch, (c + 0.5) * cw, name))
+
+        # assign each component to nearest cell center; union boxes per cell
+        acc: dict[str, list[int]] = {}
+        for y0, y1, x0, x1 in boxes:
+            cy, cx = (y0 + y1) / 2, (x0 + x1) / 2
+            name = min(cells, key=lambda k: (k[0] - cy) ** 2 + (k[1] - cx) ** 2)[2]
+            if name in acc:
+                p = acc[name]
+                p[0], p[1] = min(p[0], y0), max(p[1], y1)
+                p[2], p[3] = min(p[2], x0), max(p[3], x1)
+            else:
+                acc[name] = [y0, y1, x0, x1]
+
+        missing = [k[2] for k in cells if k[2] not in acc]
+        if missing:
+            print(f"!! {f} missing: {missing}")
+        for name, (y0, y1, x0, x1) in acc.items():
+            pad = 6
+            y0, x0 = max(0, y0 - pad), max(0, x0 - pad)
+            y1, x1 = min(H, y1 + pad), min(W, x1 + pad)
+            Image.fromarray(arr[y0:y1, x0:x1], "RGBA").save(SHEET_OUT / f"{name}.png")
+        print(f"split {f}: {len(acc)}/{len(cells)} cells")
+
+    for (d, f), name in BG_MAP.items():
+        Image.open(d / f).convert("RGB").save(ART / f"{name}.png")
+        print(f"{name:18s}<- {f}")
+
+
 if __name__ == "__main__":
     archive_kimi()  # capture kimi originals (cleaned) before overwriting
     process_gpt()
     process_cutouts()
     process_cutouts2()
     process_wide_bg()
+    split_sheets()
     print("done")
