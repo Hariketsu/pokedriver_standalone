@@ -25,7 +25,7 @@ export default function StudyHubScreen() {
           data-back
           onClick={() => go("title")}
         >
-          ‹ 返回
+          <Icon name="icon-back" size={13} alt="" /> 返回
         </button>
         <h2>学习中心</h2>
         <span style={{ width: 52 }} />

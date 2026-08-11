@@ -116,7 +116,7 @@ export default function ReviewScreen() {
             setScreen("study");
           }}
         >
-          ‹ 返回
+          <Icon name="icon-back" size={13} alt="" /> 返回
         </button>
         <h2>题库复习</h2>
         <div className="review-head-actions">

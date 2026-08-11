@@ -22,7 +22,7 @@ export default function SettingsScreen() {
             setScreen("title");
           }}
         >
-          ‹ 返回
+          <Icon name="icon-back" size={13} alt="" /> 返回
         </button>
         <h2>设置</h2>
         <span />

@@ -57,15 +57,15 @@ export default function OverScreen() {
   const acc = answered ? Math.round((correct / answered) * 100) : 0;
   const metaGold = meta.metaGold ?? 0;
 
-  const stats: [string | number, string][] = [
-    [score, "总分"],
-    [goldEarned, "累计金币"],
-    [`${correct}/${answered}`, "答题（正确/总数）"],
-    [acc + "%", "正确率"],
-    [maxCombo, "最高连击"],
-    [captures, "捕获宝可梦"],
-    [floorsCleared, "通过层数"],
-    [minutes + " 分钟", "用时"],
+  const stats: [string | number, string, string][] = [
+    [score, "总分", "item-trophy"],
+    [goldEarned, "累计金币", "item-coin"],
+    [`${correct}/${answered}`, "答题（正确/总数）", "item-book"],
+    [acc + "%", "正确率", "item-star"],
+    [maxCombo, "最高连击", "badge-combo"],
+    [captures, "捕获宝可梦", "item-ball-red"],
+    [floorsCleared, "通过层数", "item-sword"],
+    [minutes + " 分钟", "用时", ""],
   ];
 
   return (
@@ -109,10 +109,13 @@ export default function OverScreen() {
           )}
         </div>
         <div className="over-stats" id="over-stats">
-          {stats.map(([v, k]) => (
+          {stats.map(([v, k, icon]) => (
             <div className="over-stat" key={k}>
               <div className="os-v">{v}</div>
-              <div className="os-k">{k}</div>
+              <div className="os-k">
+                {icon ? <Icon name={icon} size={14} alt="" /> : null}
+                {k}
+              </div>
             </div>
           ))}
         </div>
@@ -128,7 +131,7 @@ export default function OverScreen() {
             再来一局
           </button>
           <button
-            className="btn"
+            className="btn btn-gold"
             id="btn-over-train"
             onClick={() => {
               AudioEngine.sfx("click");

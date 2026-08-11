@@ -212,7 +212,7 @@ export default function WrongBookScreen() {
             setScreen("study");
           }}
         >
-          ‹ 返回
+          <Icon name="icon-back" size={13} alt="" /> 返回
         </button>
         <h2>错题本</h2>
         <div className="wrong-progress" id="wrong-progress">

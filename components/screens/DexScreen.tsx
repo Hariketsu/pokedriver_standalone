@@ -66,7 +66,7 @@ export default function DexScreen() {
             setScreen("title");
           }}
         >
-          ‹ 返回
+          <Icon name="icon-back" size={13} alt="" /> 返回
         </button>
         <h2>宝可梦图鉴</h2>
         <div className="dex-progress" id="dex-progress">

@@ -96,6 +96,8 @@ export type RunState = {
   answered: number;
   correct: number;
   startTime: number;
+  /** 此前各 session 累计游玩毫秒数;startTime 每次读档时重置为当前时间 */
+  elapsedMs?: number;
 };
 
 export type EnemyState = {

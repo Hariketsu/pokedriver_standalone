@@ -419,7 +419,7 @@ export default function BattleScreen() {
           </div>
           <div className="pc-hp">
             <div
-              className="pc-hp-fill"
+              className={"pc-hp-fill" + (pHpPct <= 35 ? " low" : "")}
               id="player-hp-fill"
               style={{ width: `${pHpPct}%` }}
             />
@@ -429,6 +429,14 @@ export default function BattleScreen() {
           </div>
           <div className="pc-lv" id="player-lv">
             Lv.{active.lv} · XP {active.xp}/{xpNeed(active.lv)}
+          </div>
+          <div className="pc-xp" id="player-xp">
+            <div
+              className="pc-xp-fill"
+              style={{
+                width: `${clamp((active.xp / xpNeed(active.lv)) * 100, 0, 100)}%`,
+              }}
+            />
           </div>
         </div>
         <div className="fx-layer" id="fx-layer" ref={fxLayerRef} />

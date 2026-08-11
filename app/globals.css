@@ -848,6 +848,11 @@ body{
 /* ---------- 场景背景 ---------- */
 .screen.has-scene{background:var(--bg)}
 .has-scene>*:not(.scene-bg){position:relative;z-index:1}
+/* 战斗舞台内的悬浮层本来就是 absolute,上面的通配规则 specificity 更高会压掉,在此补回 */
+.battle-stage.has-scene>.battle-topbar,
+.battle-stage.has-scene>.enemy-card,
+.battle-stage.has-scene>.player-card,
+.battle-stage.has-scene>.fx-layer{position:absolute}
 .battle-stage.has-scene{background:none}
 .scene-bg{position:absolute;inset:0;overflow:hidden;z-index:0}
 .scene-bg picture{display:contents}
@@ -989,7 +994,7 @@ body{
 .dex-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 16px rgba(0,0,0,.3),0 0 14px rgba(0,240,255,.12)}
 .dex-card.r-r{border-image:url(/art/ui/dex-frame-rare.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 18px rgba(0,0,0,.32),0 0 16px rgba(255,215,0,.16)}
 .dex-card.r-l{border-image:url(/art/ui/dex-frame-legendary.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 8px 20px rgba(0,0,0,.38),0 0 20px rgba(255,0,68,.22)}
-.dex-card.unknown{background:rgba(10,14,34,.6);border:1px solid var(--line);border-image:none;border-radius:10px}
+.dex-card.unknown{border-image:url(/art/ui/dex-frame-locked.png) 64 fill / 10px / 0 stretch;background:none;border-color:transparent}
 .dex-detail-card.r-c{border-image:url(/art/ui/dex-frame-common.png) 64 fill / 12px / 0 stretch;background:none}
 .dex-detail-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.png) 64 fill / 12px / 0 stretch;background:none}
 .dex-detail-card.r-r{border-image:url(/art/ui/dex-frame-rare.png) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 22px rgba(255,215,0,.15)}
@@ -1069,3 +1074,31 @@ body{
   border-image:url(/art/ui/fill-hp-mini.png) 0 55 fill / 0 4px / 0 stretch;
   border-radius:0;background:none;
 }
+
+/* ---------- 素材多样化补丁 (bar-frame/panel-purple/panel-green/fill-exp/fill-hp-low) ---------- */
+/* 战斗: 敌方紫板, 我方凸起蓝板 */
+.enemy-card{border-image-source:url(/art/ui/panel-purple.png)}
+.player-card{border-image-source:url(/art/ui/panel-navy-raised.png)}
+/* 战斗: 血条/经验条轨道用 bar-frame 系, 低血变黄 */
+.ec-hp,.pc-hp{
+  height:18px;padding:3px 8px;box-sizing:border-box;
+  border:none;border-radius:0;background:none;overflow:visible;
+  border-image:url(/art/ui/bar-frame.png) 0 60 fill / 0 12px / 0 stretch;
+}
+.pc-hp{border-image-source:url(/art/ui/bar-frame-cyan.png)}
+.ec-hp span,.pc-hp span{line-height:18px}
+.ec-hp-fill,.pc-hp-fill{height:100%;border-radius:0}
+.pc-hp-fill.low{border-image-source:url(/art/ui/fill-hp-low.png)}
+.pc-xp{
+  position:relative;height:9px;margin-top:4px;padding:1px 6px;box-sizing:border-box;
+  border-image:url(/art/ui/bar-frame-gray.png) 0 50 fill / 0 6px / 0 stretch;
+}
+.pc-xp-fill{
+  height:100%;
+  border-image:url(/art/ui/fill-exp.png) 0 55 fill / 0 5px / 0 stretch;
+}
+/* 休息点: 绿板与商店区分 */
+.rest-card{border-image-source:url(/art/ui/panel-green.png)}
+/* 结算: 凸起板 + 图标行 */
+.over-stat{border-image-source:url(/art/ui/panel-navy-raised.png)}
+.over-stat .os-k{display:flex;align-items:center;justify-content:center;gap:5px}

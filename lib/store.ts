@@ -118,6 +118,9 @@ export function normalizeRun(raw: RawRun | null | undefined): RunState | null {
     ultraBalls,
     masterBalls,
     superBalls: greatBalls,
+    // 读档时重置计时起点,挂机/关屏时间不计入用时
+    startTime: Date.now(),
+    elapsedMs: raw.elapsedMs ?? 0,
   };
 }
 
@@ -174,7 +177,11 @@ function saveRunToStorage(run: RunState | null): void {
   try {
     if (run) {
       // dual-write legacy superBalls for rollback safety
-      const payload = { ...run, superBalls: run.greatBalls };
+      // 结算本 session 已游玩时长并累加进 elapsedMs;live state 的 startTime 不动,
+      // 同一 session 内重复存档不会重复累计
+      const elapsedMs =
+        (run.elapsedMs ?? 0) + Math.max(0, Date.now() - run.startTime);
+      const payload = { ...run, elapsedMs, superBalls: run.greatBalls };
       localStorage.setItem(RUN_KEY, JSON.stringify(payload));
     } else localStorage.removeItem(RUN_KEY);
   } catch {
@@ -526,6 +533,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       answered: 0,
       correct: 0,
       startTime: Date.now(),
+      elapsedMs: 0,
     };
 
     // markSeen starter
@@ -1122,7 +1130,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const minutes = Math.max(
       1,
-      Math.round((Date.now() - run.startTime) / 60000),
+      Math.round(
+        ((run.elapsedMs ?? 0) + Date.now() - run.startTime) / 60000,
+      ),
     );
     const info: GameOverInfo = {
       win,

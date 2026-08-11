@@ -167,7 +167,7 @@ export default function ExamScreen() {
               setScreen("study");
             }}
           >
-            ‹ 返回
+            <Icon name="icon-back" size={13} alt="" /> 返回
           </button>
           <h2>科目一模拟</h2>
           <div style={{ width: 56 }} />
@@ -217,7 +217,7 @@ export default function ExamScreen() {
               setScreen("study");
             }}
           >
-            ‹ 返回
+            <Icon name="icon-back" size={13} alt="" /> 返回
           </button>
           <h2>考试结果</h2>
           <div style={{ width: 56 }} />
