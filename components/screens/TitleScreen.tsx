@@ -1,33 +1,44 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { POKEMON } from "@/data";
+import { useEffect, useState } from "react";
 import { useGameStore } from "@/lib/store";
-import { ICON } from "@/lib/icon";
-import { PKMN_BY_ID, pick } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
+
+const STARTERS = [
+  { src: "/art/starter-volt.png", alt: "电系伙伴" },
+  { src: "/art/starter-leaf.png", alt: "叶系伙伴" },
+  { src: "/art/starter-cloud.png", alt: "云系伙伴" },
+] as const;
 
 export default function TitleScreen() {
   const meta = useGameStore((s) => s.meta);
   const hasSave = useGameStore((s) => s.hasSave);
+  const loadRun = useGameStore((s) => s.loadRun);
   const setScreen = useGameStore((s) => s.setScreen);
   const continueRun = useGameStore((s) => s.continueRun);
   const openModal = useGameStore((s) => s.openModal);
   const [saveExists, setSaveExists] = useState(() =>
     useGameStore.getState().hasSave(),
   );
-
-  const titleIds = useMemo(() => {
-    const ids = new Set<number>();
-    while (ids.size < 3 && POKEMON.length) {
-      ids.add(pick(POKEMON).id);
-    }
-    return Array.from(ids);
-  }, []);
+  const [saveInfo, setSaveInfo] = useState<{
+    floor: number;
+    team: number;
+    gold: number;
+  } | null>(null);
 
   useEffect(() => {
     setSaveExists(hasSave());
-  }, [hasSave, meta]);
+    const run = loadRun();
+    setSaveInfo(
+      run
+        ? {
+            floor: run.floorsCleared + 1,
+            team: run.team.length,
+            gold: run.gold,
+          }
+        : null,
+    );
+  }, [hasSave, loadRun, meta]);
 
   const caught = Object.values(meta.dex).filter((d) => d.caught > 0).length;
   const wrongCount = Object.keys(meta.wrongQ).length;
@@ -52,8 +63,11 @@ export default function TitleScreen() {
   return (
     <section className="screen active" id="scr-title">
       <div className="title-bg">
-        <div className="title-grid" />
-        <div className="title-glow" />
+        <picture>
+          <source media="(min-width:768px)" srcSet="/art/bg-16-9.png" />
+          <img className="title-bg-img" src="/art/hero-bg.png" alt="" />
+        </picture>
+        <div className="title-shade" />
       </div>
 
       <button
@@ -63,71 +77,68 @@ export default function TitleScreen() {
         aria-label="设置"
         onClick={() => go("settings")}
       >
-        ⚙
+        <img src="/art/ui-settings.png" alt="设置" />
       </button>
 
       <div className="title-inner">
         <div className="title-logo">
-          <div className="logo-top">宝可驾</div>
-          <div className="logo-sub">交 规 地 牢</div>
-          <div className="logo-tag">— 答题爬塔 · 捕捉宝可梦 · 通关科目一 —</div>
+          <img className="logo-img" src="/art/ui-logo.png" alt="宝可驾 · 交规地牢" />
         </div>
 
-        <div className="title-pkmn" id="title-pkmn">
-          {titleIds.map((id) => (
-            <img key={id} src={ICON(id)} alt={PKMN_BY_ID[id]?.c ?? ""} />
+        <div className="title-starters">
+          {STARTERS.map((s) => (
+            <img key={s.src} src={s.src} alt={s.alt} />
           ))}
         </div>
 
         <div className="title-cta">
-          {saveExists ? (
-            <>
-              <button
-                className="btn btn-primary"
-                id="btn-continue"
-                onClick={onContinue}
-              >
-                继续冒险
-              </button>
-              <button
-                className="btn btn-ghost"
-                id="btn-start"
-                onClick={onPrimaryStart}
-              >
-                新的冒险
-              </button>
-            </>
-          ) : (
+          {saveExists && (
             <button
-              className="btn btn-primary"
-              id="btn-start"
-              onClick={onPrimaryStart}
+              className="btn-plate"
+              id="btn-continue"
+              onClick={onContinue}
             >
-              开始冒险
+              <img className="bp-bg" src="/art/ui-plate-gold-long.png" alt="" />
+              <span className="bp-content">
+                <span className="bp-label bp-label-dark">
+                  <img className="bp-play" src="/art/ui-play.png" alt="" />
+                  继续冒险
+                </span>
+                {saveInfo && (
+                  <span className="bp-sub">
+                    第 {saveInfo.floor} 关 · 队伍 {saveInfo.team} · 金币{" "}
+                    {saveInfo.gold}
+                  </span>
+                )}
+              </span>
             </button>
           )}
+          <button className="btn-plate" id="btn-start" onClick={onPrimaryStart}>
+            <img className="bp-bg" src="/art/ui-plate-blue.png" alt="" />
+            <span className="bp-content">
+              <span className="bp-label">新的冒险</span>
+            </span>
+          </button>
         </div>
 
         <div className="title-grid-nav" aria-label="次要功能">
           <button
             type="button"
-            className="title-nav-card"
+            className="title-nav-card tnc-dex"
             id="btn-dex"
             onClick={() => go("dex")}
           >
-            <span className="tnc-icon">📖</span>
+            <img className="tnc-icon" src="/art/icon-dex.png" alt="" />
             <span className="tnc-label">图鉴</span>
-            <span className="tnc-sub">
-              {caught}/721
-            </span>
+            <span className="tnc-sub">{caught}/721</span>
           </button>
           <button
             type="button"
-            className="title-nav-card"
+            className="title-nav-card tnc-study"
             id="btn-study"
             onClick={() => go("study")}
           >
-            <span className="tnc-icon">📚</span>
+            <img className="tnc-icon" src="/art/icon-study.png" alt="" />
             <span className="tnc-label">学习</span>
             <span className="tnc-sub">
               {wrongCount > 0 ? `错题 ${wrongCount}` : "模考 · 题库"}
@@ -135,33 +146,31 @@ export default function TitleScreen() {
           </button>
           <button
             type="button"
-            className="title-nav-card"
+            className="title-nav-card tnc-train"
             id="btn-train"
             onClick={() => go("train")}
           >
-            <span className="tnc-icon">🧬</span>
+            <img className="tnc-icon" src="/art/icon-train.png" alt="" />
             <span className="tnc-label">养成</span>
             <span className="tnc-sub">💰 {metaGold}</span>
           </button>
           <button
             type="button"
-            className="title-nav-card title-nav-card-dim"
+            className="title-nav-card tnc-settings"
             id="btn-settings-grid"
             onClick={() => go("settings")}
           >
-            <span className="tnc-icon">⚙</span>
+            <img className="tnc-icon" src="/art/icon-settings.png" alt="" />
             <span className="tnc-label">设置</span>
             <span className="tnc-sub">音量 · 难度</span>
           </button>
         </div>
 
-        <div className="title-stats" id="title-stats">
-          {meta.bestScore > 0 && <span>🏆 {meta.bestScore}</span>}
-          <span>📖 {caught}/721</span>
-          <span>💰 {metaGold}</span>
-        </div>
-        <div className="title-foot">
-          驾考题库 1034 题 · 宝可梦 721 只 · 仅供学习娱乐
+        <div className="title-foot" id="title-stats">
+          {meta.bestScore > 0 && <span>🏆 {meta.bestScore} · </span>}
+          <span>📖 图鉴 {caught}/721</span>
+          <span> · 💰 金币 {metaGold} · </span>
+          <span>驾考题库 1034 题 · 仅供学习娱乐</span>
         </div>
       </div>
     </section>
