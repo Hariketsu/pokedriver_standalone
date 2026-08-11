@@ -6,6 +6,7 @@ import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import { listWrongQuestions, sampleWrongPool } from "@/lib/exam";
 import Icon from "@/components/ui/Icon";
+import SceneBg from "@/components/ui/SceneBg";
 
 const KEYS = ["A", "B", "C", "D", "E"];
 
@@ -120,7 +121,8 @@ export default function WrongBookScreen() {
     const q = study.qs[study.idx];
     const done = !q;
     return (
-      <section className="screen active" id="scr-wrong">
+      <section className="screen active has-scene" id="scr-wrong">
+        <SceneBg name="over-lose" soft />
         <div className="page-head row">
           <button className="btn btn-mini back" data-back onClick={exitStudy}>
             ‹ 列表
@@ -202,7 +204,8 @@ export default function WrongBookScreen() {
 
   // ---- list / empty ----
   return (
-    <section className="screen active" id="scr-wrong">
+    <section className="screen active has-scene" id="scr-wrong">
+      <SceneBg name="over-lose" soft />
       <div className="page-head row">
         <button
           className="btn btn-mini back"

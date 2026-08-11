@@ -5,6 +5,7 @@ import { useGameStore } from "@/lib/store";
 import { metaUpgradeCost } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
 import Icon from "@/components/ui/Icon";
+import SceneBg from "@/components/ui/SceneBg";
 
 export default function TrainScreen() {
   const meta = useGameStore((s) => s.meta);
@@ -20,7 +21,8 @@ export default function TrainScreen() {
   const hpBonus = meta.metaHpLv * GAME_CONST.HP_PER_META_LV;
 
   return (
-    <section className="screen active" id="scr-train">
+    <section className="screen active has-scene" id="scr-train">
+      <SceneBg name="battle" soft />
       <div className="page-head row">
         <button
           className="btn btn-mini"
@@ -35,6 +37,13 @@ export default function TrainScreen() {
         <h2>养成训练</h2>
         <span style={{ width: 52 }} />
       </div>
+
+      <img
+        className="train-flag px"
+        src="/art/strip-checkers.png"
+        alt=""
+        draggable={false}
+      />
 
       <div className="train-body">
         <div className="train-gold" id="train-meta-gold">

@@ -5,6 +5,7 @@ import { QUESTIONS } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import Icon from "@/components/ui/Icon";
+import SceneBg from "@/components/ui/SceneBg";
 import {
   EXAM_PASS_SCORE,
   EXAM_Q_COUNT,
@@ -157,7 +158,8 @@ export default function ExamScreen() {
   // ---- intro ----
   if (!session) {
     return (
-      <section className="screen active" id="scr-exam">
+      <section className="screen active has-scene" id="scr-exam">
+        <SceneBg name="over-lose" soft />
         <div className="page-head row">
           <button
             className="btn btn-mini back"
@@ -206,7 +208,8 @@ export default function ExamScreen() {
     const score = session.score ?? 0;
     const pass = score >= EXAM_PASS_SCORE;
     return (
-      <section className="screen active" id="scr-exam">
+      <section className="screen active has-scene" id="scr-exam">
+        <SceneBg name="over-lose" soft />
         <div className="page-head row">
           <button
             className="btn btn-mini back"
@@ -305,7 +308,8 @@ export default function ExamScreen() {
 
   // ---- live ----
   return (
-    <section className="screen active" id="scr-exam">
+    <section className="screen active has-scene" id="scr-exam">
+      <SceneBg name="over-lose" soft />
       <div className="exam-top">
         <button className="btn btn-mini back" data-back onClick={leaveToTitle}>
           ‹ 退出

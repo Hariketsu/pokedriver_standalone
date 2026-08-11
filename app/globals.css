@@ -1102,3 +1102,23 @@ body{
 /* 结算: 凸起板 + 图标行 */
 .over-stat{border-image-source:url(/art/ui/panel-navy-raised.png)}
 .over-stat .os-k{display:flex;align-items:center;justify-content:center;gap:5px}
+
+/* ---------- 学习线场景化 + 桌面战斗三栏 ---------- */
+/* 学习屏文字压一下场景图,保证可读 */
+.screen.has-scene .dim,.screen.has-scene .study-hub-lead,.screen.has-scene .train-hint{text-shadow:0 1px 3px rgba(0,0,0,.85)}
+/* 学习中心三卡: 标题页同款亮光板(蓝/紫/绿) */
+.study-card{border-image:url(/art/ui-plate-blue.png) 100 220 fill / 18px 36px / 0 stretch}
+.study-card#btn-hub-wrong{border-image-source:url(/art/ui-plate-purple.png)}
+.study-card#btn-hub-review{border-image-source:url(/art/ui-plate-green.png)}
+/* 养成训练: 紫=攻击 绿=生命, 赛道旗横幅 */
+.train-card{border-image:url(/art/ui-plate-purple.png) 100 220 fill / 18px 36px / 0 stretch}
+.train-card + .train-card{border-image-source:url(/art/ui-plate-green.png)}
+.train-flag{display:block;width:min(92%,480px);height:42px;object-fit:fill;margin:2px auto 0;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+/* 桌面战斗: 队伍列左 / 题目中 / 道具列右, 填满两侧 */
+@media (min-width:1000px){
+  .battle-panel{max-width:1180px;display:grid;grid-template-columns:230px minmax(0,1fr) 170px;gap:14px;align-items:end}
+  .battle-panel .team-bar{flex-direction:column;overflow:visible;min-height:0}
+  .battle-panel .team-slot{width:100%}
+  .battle-panel .battle-actions{flex-direction:column;align-items:stretch}
+  .battle-panel .battle-actions .btn{width:100%}
+}

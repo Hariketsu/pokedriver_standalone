@@ -4,6 +4,7 @@ import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import type { Difficulty } from "@/lib/types";
 import Icon from "@/components/ui/Icon";
+import SceneBg from "@/components/ui/SceneBg";
 
 export default function SettingsScreen() {
   const settings = useGameStore((s) => s.meta.settings);
@@ -12,7 +13,8 @@ export default function SettingsScreen() {
   const openModal = useGameStore((s) => s.openModal);
 
   return (
-    <section className="screen active" id="scr-settings">
+    <section className="screen active has-scene" id="scr-settings">
+      <SceneBg name="over-lose" soft />
       <div className="page-head row">
         <button
           className="btn btn-mini back"

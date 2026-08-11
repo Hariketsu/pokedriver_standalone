@@ -5,6 +5,7 @@ import { AudioEngine } from "@/lib/audio";
 import { QUESTIONS } from "@/data";
 import { EXAM_QUESTION_COUNT } from "@/data/constants";
 import Icon from "@/components/ui/Icon";
+import SceneBg from "@/components/ui/SceneBg";
 
 export default function StudyHubScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -17,7 +18,8 @@ export default function StudyHubScreen() {
   }
 
   return (
-    <section className="screen active" id="scr-study">
+    <section className="screen active has-scene" id="scr-study">
+      <SceneBg name="over-lose" soft />
       <div className="page-head row">
         <button
           type="button"

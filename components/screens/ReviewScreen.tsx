@@ -6,6 +6,7 @@ import { useGameStore } from "@/lib/store";
 import { clamp } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
 import Icon from "@/components/ui/Icon";
+import SceneBg from "@/components/ui/SceneBg";
 import type { Question } from "@/data";
 
 const REV_PAGE = 40;
@@ -106,7 +107,8 @@ export default function ReviewScreen() {
   }
 
   return (
-    <section className="screen active" id="scr-review">
+    <section className="screen active has-scene" id="scr-review">
+      <SceneBg name="over-lose" soft />
       <div className="page-head row">
         <button
           className="btn btn-mini back"
