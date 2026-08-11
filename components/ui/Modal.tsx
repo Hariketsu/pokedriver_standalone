@@ -14,9 +14,10 @@ import {
   GAME_CONST,
 } from "@/lib/formulas";
 import { ICON } from "@/lib/icon";
+import Icon from "@/components/ui/Icon";
 import { AudioEngine } from "@/lib/audio";
 import { getEventById } from "@/lib/events";
-import type { BallType, RunState } from "@/lib/types";
+import type { BallType, RunState, TreasureRewardKind } from "@/lib/types";
 
 type Props = {
   onCapture?: (ball: BallType) => void;
@@ -27,13 +28,22 @@ const BALL_META: Record<
   BallType,
   { icon: string; name: string; css: string }
 > = {
-  normal: { icon: "🔴", name: "精灵球", css: "ball-normal" },
-  great: { icon: "🔵", name: "超级球", css: "ball-great" },
-  ultra: { icon: "🟡", name: "高级球", css: "ball-ultra" },
-  master: { icon: "⭐", name: "大师球", css: "ball-master" },
+  normal: { icon: "item-ball-red", name: "精灵球", css: "ball-normal" },
+  great: { icon: "item-ball-blue", name: "超级球", css: "ball-great" },
+  ultra: { icon: "item-ball-yellow", name: "高级球", css: "ball-ultra" },
+  master: { icon: "item-ball-master", name: "大师球", css: "ball-master" },
 };
 
 const CAPTURE_BALLS: BallType[] = ["normal", "great", "ultra", "master"];
+
+const TREASURE_ICON: Record<TreasureRewardKind, string> = {
+  gold: "item-coin",
+  balls: "item-ball-red",
+  greatBalls: "item-ball-blue",
+  ultraBalls: "item-ball-yellow",
+  potion: "item-potion",
+  xp: "item-star",
+};
 
 function ballCount(run: RunState, id: BallType): number {
   if (id === "normal") return run.balls;
@@ -42,14 +52,21 @@ function ballCount(run: RunState, id: BallType): number {
   return run.masterBalls;
 }
 
-function inventoryLine(run: RunState): string {
-  const parts = [
-    `🔴×${run.balls}`,
-    `🔵×${run.greatBalls}`,
-    `🟡×${run.ultraBalls}`,
-  ];
-  if (run.masterBalls > 0) parts.push(`⭐×${run.masterBalls}`);
-  return parts.join(" ");
+function InventoryLine({ run }: { run: RunState }) {
+  return (
+    <>
+      <Icon name="item-ball-red" size={16} alt="精灵球" />×{run.balls}{" "}
+      <Icon name="item-ball-blue" size={16} alt="超级球" />×{run.greatBalls}{" "}
+      <Icon name="item-ball-yellow" size={16} alt="高级球" />×{run.ultraBalls}
+      {run.masterBalls > 0 && (
+        <>
+          {" "}
+          <Icon name="item-ball-master" size={16} alt="大师球" />×
+          {run.masterBalls}
+        </>
+      )}
+    </>
+  );
 }
 
 export default function Modal({ onCapture, onSkipCapture }: Props) {
@@ -189,7 +206,7 @@ export default function Modal({ onCapture, onSkipCapture }: Props) {
               })}
             </div>
             <p className="dim" style={{ marginTop: 10 }}>
-              {inventoryLine(run)} · 伤药 ×{run.potions}
+              <InventoryLine run={run} /> · 伤药 ×{run.potions}
             </p>
             <div className="m-actions">
               <button className="btn" onClick={closeModal}>
@@ -236,7 +253,11 @@ export default function Modal({ onCapture, onSkipCapture }: Props) {
                           {t}
                         </span>
                       ))}
-                      {owned && <span className="tag tag-c">已收藏</span>}
+                      {owned && (
+                        <span className="tag tag-c">
+                          <Icon name="badge-caught" size={26} alt="已收藏" />
+                        </span>
+                      )}
                     </div>
                   )}
                   <div className="dex-detail-stats">
@@ -310,7 +331,13 @@ export default function Modal({ onCapture, onSkipCapture }: Props) {
                         disabled={count <= 0}
                         onClick={() => onCapture?.(id)}
                       >
-                        <span className="b-icon">{metaBall.icon}</span>
+                        <span className="b-icon">
+                          <Icon
+                            name={metaBall.icon}
+                            size={26}
+                            alt={metaBall.name}
+                          />
+                        </span>
                         <span className="b-name">{metaBall.name}</span>
                         <span className="b-rate">{pct}%</span>
                         <span className="b-cnt">×{count}</span>
@@ -389,14 +416,18 @@ export default function Modal({ onCapture, onSkipCapture }: Props) {
 
         {modal.kind === "treasure" && (
           <>
-            <h3>🎁 发现宝箱！</h3>
+            <h3>
+              <Icon name="item-coin" size={22} alt="宝箱" /> 发现宝箱！
+            </h3>
             <p className="dim" style={{ marginBottom: 12 }}>
               你打开了路边的宝箱，获得了：
             </p>
             <div className="treasure-list" id="treasure-list">
               {modal.rewards.map((r, i) => (
                 <div className="treasure-item" key={`${r.kind}-${i}`}>
-                  <span className="ti-icon">{r.icon}</span>
+                  <span className="ti-icon">
+                    <Icon name={TREASURE_ICON[r.kind]} size={22} alt={r.label} />
+                  </span>
                   <span className="ti-label">{r.label}</span>
                 </div>
               ))}
@@ -422,7 +453,9 @@ export default function Modal({ onCapture, onSkipCapture }: Props) {
             if (!evt) {
               return (
                 <>
-                  <h3>❓ 事件</h3>
+                  <h3>
+                    <Icon name="item-book" size={22} alt="事件" /> 事件
+                  </h3>
                   <p className="dim">事件数据丢失</p>
                   <div className="m-actions">
                     <button
@@ -437,7 +470,9 @@ export default function Modal({ onCapture, onSkipCapture }: Props) {
             }
             return (
               <>
-                <h3 id="event-title">❓ {evt.title}</h3>
+                <h3 id="event-title">
+                  <Icon name="item-book" size={22} alt="" /> {evt.title}
+                </h3>
                 <p className="dim event-text" id="event-text">
                   {evt.text}
                 </p>

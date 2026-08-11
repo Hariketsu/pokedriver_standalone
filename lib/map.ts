@@ -2,14 +2,14 @@ import type { MapNode, NodeType, RunState } from "./types";
 import { pick } from "./formulas";
 
 export const NODE_ICON: Record<NodeType, string> = {
-  battle: "⚔️",
-  elite: "💀",
-  shop: "🛒",
-  rest: "🔥",
-  event: "❓",
-  treasure: "🎁",
-  boss2: "👹",
-  boss: "🐉",
+  battle: "item-sword",
+  elite: "item-star",
+  shop: "item-coin",
+  rest: "item-campfire",
+  event: "item-book",
+  treasure: "item-trophy",
+  boss2: "item-skull",
+  boss: "item-skull",
 };
 
 export const NODE_LABEL: Record<NodeType, string> = {

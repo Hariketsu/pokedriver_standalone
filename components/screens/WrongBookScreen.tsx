@@ -5,6 +5,7 @@ import { QUESTIONS, type Question } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import { listWrongQuestions, sampleWrongPool } from "@/lib/exam";
+import Icon from "@/components/ui/Icon";
 
 const KEYS = ["A", "B", "C", "D", "E"];
 
@@ -222,7 +223,9 @@ export default function WrongBookScreen() {
 
       {wrongCount === 0 ? (
         <div className="wrong-empty" id="wrong-list">
-          <div className="wrong-empty-icon">✓</div>
+          <div className="wrong-empty-icon">
+            <Icon name="stamp-pass" size={72} />
+          </div>
           <p>暂无错题</p>
           <p className="dim">
             在模考或冒险中答错的题目会出现在这里。
@@ -280,7 +283,14 @@ export default function WrongBookScreen() {
                     setOpenIds((m) => ({ ...m, [q.id]: !m[q.id] }));
                   }}
                 >
-                  <div className="rq">🔴 {q.q}</div>
+                  <div className="rq">
+                    <Icon
+                      name="item-ball-red"
+                      size={14}
+                      className="rq-ball"
+                    />{" "}
+                    {q.q}
+                  </div>
                   <div className="ra">
                     {q.opts.map((o, i) => (
                       <div key={i} className={i === q.ans ? "ok" : "no"}>

@@ -5,6 +5,7 @@ import { QUESTIONS } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { clamp } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
+import Icon from "@/components/ui/Icon";
 import type { Question } from "@/data";
 
 const REV_PAGE = 40;
@@ -187,7 +188,13 @@ export default function ReviewScreen() {
               }}
             >
               <div className="rq">
-                {wrong ? "🔴 " : ""}
+                {wrong && (
+                  <Icon
+                    name="item-ball-red"
+                    size={14}
+                    className="rq-ball"
+                  />
+                )}{" "}
                 {q.q}
               </div>
               <div className="ra">
@@ -289,7 +296,13 @@ export default function ReviewScreen() {
               return (
                 <>
                   <h3 style={{ textAlign: "center" }}>
-                    {pass ? "🎉 练习完成" : "继续加油"}
+                    {pass ? (
+                      <>
+                        <Icon name="item-trophy" size={22} /> 练习完成
+                      </>
+                    ) : (
+                      "继续加油"
+                    )}
                   </h3>
                   <div
                     style={{

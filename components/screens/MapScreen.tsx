@@ -1,23 +1,33 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { useGameStore, selectScore } from "@/lib/store";
 import { NODE_ICON, isReachable } from "@/lib/map";
 import { clamp } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
+import SceneBg from "@/components/ui/SceneBg";
+import Icon from "@/components/ui/Icon";
 import type { MapNode, RunState } from "@/lib/types";
 
 function stableJitter(f: number, i: number, c: number): number {
   return ((f * 17 + i * 31 + c * 13) % 17) - 8;
 }
 
-function ballHud(run: RunState): string {
-  const parts: string[] = [`🔴${run.balls}`];
+function ballHud(run: RunState): ReactElement[] {
+  const item = (key: string, icon: string, count: number) => (
+    <span key={key} className="ball-hud-item">
+      <Icon name={icon} size={14} alt={key} />
+      {count}
+    </span>
+  );
+  const parts: ReactElement[] = [item("ball", "item-ball-red", run.balls)];
   const great = run.greatBalls ?? run.superBalls ?? 0;
-  if (great > 0) parts.push(`🔵${great}`);
-  if ((run.ultraBalls ?? 0) > 0) parts.push(`🟡${run.ultraBalls}`);
-  if ((run.masterBalls ?? 0) > 0) parts.push(`⭐${run.masterBalls}`);
-  return parts.join(" ");
+  if (great > 0) parts.push(item("great", "item-ball-blue", great));
+  if ((run.ultraBalls ?? 0) > 0)
+    parts.push(item("ultra", "item-ball-yellow", run.ultraBalls!));
+  if ((run.masterBalls ?? 0) > 0)
+    parts.push(item("master", "item-ball-master", run.masterBalls!));
+  return parts;
 }
 
 export default function MapScreen() {
@@ -96,7 +106,8 @@ export default function MapScreen() {
   );
 
   return (
-    <section className="screen active" id="scr-map">
+    <section className="screen active has-scene" id="scr-map">
+      <SceneBg name="map" soft />
       <div className="hud-bar">
         <div className="hud-item" id="hud-floor">
           第 {clamp(run.pos.f + 1, 1, 15)} 层
@@ -182,7 +193,7 @@ export default function MapScreen() {
                       moveTo(f, i);
                     }}
                   >
-                    {NODE_ICON[n.type]}
+                    <Icon name={NODE_ICON[n.type]} size={boss ? 34 : 28} alt={n.type} />
                   </div>
                 );
               }),

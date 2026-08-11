@@ -1171,3 +1171,8 @@ export function selectReady(s: {
 }
 
 export type { Difficulty, ShopItemId, RestOptionId, BallType };
+
+// Dev-only handle for debugging/screenshot tooling.
+if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+  (window as unknown as { __store?: typeof useGameStore }).__store = useGameStore;
+}

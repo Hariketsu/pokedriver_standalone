@@ -4,6 +4,7 @@ import { GAME_CONST } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { metaUpgradeCost } from "@/lib/formulas";
 import { AudioEngine } from "@/lib/audio";
+import Icon from "@/components/ui/Icon";
 
 export default function TrainScreen() {
   const meta = useGameStore((s) => s.meta);
@@ -38,7 +39,9 @@ export default function TrainScreen() {
       <div className="train-body">
         <div className="train-gold" id="train-meta-gold">
           <span className="tg-label">养成金币</span>
-          <span className="tg-val gold">💰 {meta.metaGold}</span>
+          <span className="tg-val gold">
+            <Icon name="item-coin" size={18} alt="金币" /> {meta.metaGold}
+          </span>
         </div>
         <p className="dim train-hint">
           冒险结束时会按金币的一半存入养成银行。升级效果在下次冒险开始时生效（攻击/生命加成）。
@@ -46,7 +49,9 @@ export default function TrainScreen() {
 
         <div className="train-card">
           <div className="tc-head">
-            <span className="tc-icon">⚔️</span>
+            <span className="tc-icon">
+              <Icon name="item-sword" size={32} alt="攻击" />
+            </span>
             <div>
               <div className="tc-name">攻击养成</div>
               <div className="tc-sub dim">
@@ -64,13 +69,22 @@ export default function TrainScreen() {
               else AudioEngine.sfx("click");
             }}
           >
-            {atkMax ? "已满级" : `升级 · 💰${atkCost}`}
+            {atkMax ? (
+              "已满级"
+            ) : (
+              <>
+                升级 · <Icon name="item-coin" size={13} alt="金币" />
+                {atkCost}
+              </>
+            )}
           </button>
         </div>
 
         <div className="train-card">
           <div className="tc-head">
-            <span className="tc-icon">❤️</span>
+            <span className="tc-icon">
+              <Icon name="item-heart" size={32} alt="生命" />
+            </span>
             <div>
               <div className="tc-name">生命养成</div>
               <div className="tc-sub dim">
@@ -88,7 +102,14 @@ export default function TrainScreen() {
               else AudioEngine.sfx("click");
             }}
           >
-            {hpMax ? "已满级" : `升级 · 💰${hpCost}`}
+            {hpMax ? (
+              "已满级"
+            ) : (
+              <>
+                升级 · <Icon name="item-coin" size={13} alt="金币" />
+                {hpCost}
+              </>
+            )}
           </button>
         </div>
       </div>

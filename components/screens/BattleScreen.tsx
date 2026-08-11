@@ -11,6 +11,8 @@ import {
   xpNeed,
 } from "@/lib/formulas";
 import { ICON } from "@/lib/icon";
+import SceneBg from "@/components/ui/SceneBg";
+import Icon from "@/components/ui/Icon";
 import { AudioEngine } from "@/lib/audio";
 import { BattleFX } from "@/lib/fx3d";
 import { spawnDmg, spawnFxText, domBurst } from "@/lib/dom-fx";
@@ -123,7 +125,7 @@ export default function BattleScreen() {
       50,
       40,
       boss
-        ? `⚠ ${e.title} ${ep?.c ?? ""} 出现！`
+        ? `${e.title} ${ep?.c ?? ""} 出现！`
         : `野生的 ${ep?.c ?? ""} 出现了！`,
       boss ? "#ff0044" : "#00f0ff",
     );
@@ -180,7 +182,7 @@ export default function BattleScreen() {
         if (crit) shakeScreen();
         spawnDmg(layer, 66, 38, `-${dmg}`, crit ? "#ffd700" : "#ff6688", crit);
         if (crit) spawnFxText(layer, 66, 30, "暴击！", "#ffd700");
-        if (fast) spawnFxText(layer, 30, 55, "⚡快速作答 +1", "#00f0ff");
+        if (fast) spawnFxText(layer, 30, 55, "快速作答 +1", "#00f0ff");
         domBurst(layer, 66, 42, crit ? "#ffd700" : "#ff6688", crit ? 22 : 12);
         if (hit?.enemyDefeated) {
           setTimeout(() => handleWin(hit.goldWin, hit.leveled), 650);
@@ -204,7 +206,7 @@ export default function BattleScreen() {
       }
       if (lastAnswer.timedOut) {
         AudioEngine.sfx("timeout");
-        spawnFxText(layer, 50, 30, "⏰ 超时！", "#ff8800");
+        spawnFxText(layer, 50, 30, "超时！", "#ff8800");
       } else {
         AudioEngine.sfx("wrong");
       }
@@ -230,7 +232,7 @@ export default function BattleScreen() {
         const name = active ? PKMN_BY_ID[active.id]?.c ?? "" : "";
         const lv = active?.lv ?? 0;
         AudioEngine.sfx("levelup");
-        spawnFxText(layer, 28, 50, `⬆ ${name} 升到 Lv.${lv}！`, "#00ff88");
+        spawnFxText(layer, 28, 50, `${name} 升到 Lv.${lv}！`, "#00ff88");
         if (BattleFX.ok) BattleFX.heal("player");
         domBurst(layer, 28, 55, "#00ff88", 18);
       }
@@ -351,7 +353,8 @@ export default function BattleScreen() {
 
   return (
     <section className="screen active" id="scr-battle">
-      <div className="battle-stage">
+      <div className="battle-stage has-scene">
+        <SceneBg name="battle" />
         <canvas id="battle-canvas" ref={canvasRef} />
         <div
           id="battle-fallback"
@@ -383,7 +386,9 @@ export default function BattleScreen() {
         <div className="enemy-card" id="enemy-card">
           <div className="ec-name" id="enemy-name">
             {ep?.c ?? "???"}
-            {e.isBoss ? " ★" : ""}
+            {e.isBoss ? (
+              <Icon name="item-star" size={14} alt="BOSS" />
+            ) : null}
           </div>
           <div className="ec-hp">
             <div
@@ -504,7 +509,7 @@ export default function BattleScreen() {
               id="btn-potion"
               onClick={onPotion}
             >
-              🧪 伤药×{run.potions}
+              <Icon name="item-potion" size={16} alt="伤药" /> 伤药×{run.potions}
             </button>
           )}
         </div>
@@ -541,7 +546,7 @@ export function useBattleCaptureHandlers() {
             layer,
             50,
             38,
-            `🎉 成功捕获 ${ep?.c ?? ""}！`,
+            `成功捕获 ${ep?.c ?? ""}！`,
             "#ffd700",
           );
           domBurst(layer, 50, 40, "#ffd700", 26);

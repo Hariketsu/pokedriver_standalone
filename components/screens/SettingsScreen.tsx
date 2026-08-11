@@ -3,6 +3,7 @@
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import type { Difficulty } from "@/lib/types";
+import Icon from "@/components/ui/Icon";
 
 export default function SettingsScreen() {
   const settings = useGameStore((s) => s.meta.settings);
@@ -61,13 +62,18 @@ export default function SettingsScreen() {
         <div className="set-row">
           <span>屏幕震动</span>
           <button
-            className={"chip" + (settings.shake ? " active" : "")}
+            className={"set-toggle" + (settings.shake ? " active" : "")}
             id="set-shake"
+            aria-label={settings.shake ? "屏幕震动：开" : "屏幕震动：关"}
             onClick={() => {
               updateSettings({ shake: !settings.shake });
             }}
           >
-            {settings.shake ? "开" : "关"}
+            <Icon
+              name={settings.shake ? "toggle-on" : "toggle-off"}
+              size={30}
+              alt=""
+            />
           </button>
         </div>
         <div className="set-row">

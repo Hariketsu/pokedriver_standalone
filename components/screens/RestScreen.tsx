@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
+import SceneBg from "@/components/ui/SceneBg";
+import Icon from "@/components/ui/Icon";
 import type { RestOptionId } from "@/lib/types";
 
 const REST_OPTS: {
@@ -14,21 +16,21 @@ const REST_OPTS: {
 }[] = [
   {
     id: "campfire",
-    icon: "🔥",
+    icon: "item-campfire",
     name: "篝火休息",
     desc: "全队恢复 40% 最大 HP",
     sfx: "heal",
   },
   {
     id: "train",
-    icon: "📖",
+    icon: "item-book",
     name: "考前特训",
     desc: "出战宝可梦获得 20 XP",
     sfx: "correct",
   },
   {
     id: "meditate",
-    icon: "🧘",
+    icon: "item-star",
     name: "冥想温习",
     desc: "随机清除 3 道错题记录",
     sfx: "heal",
@@ -41,7 +43,8 @@ export default function RestScreen() {
   const locked = useRef(false);
 
   return (
-    <section className="screen active" id="scr-rest">
+    <section className="screen active has-scene" id="scr-rest">
+      <SceneBg name="rest" />
       <div className="page-head">
         <h2>篝火休息点</h2>
         <p className="dim">选择一项恢复</p>
@@ -69,7 +72,9 @@ export default function RestScreen() {
               }, 600);
             }}
           >
-            <div className="rc-icon">{o.icon}</div>
+            <div className="rc-icon">
+              <Icon name={o.icon} size={44} alt={o.name} />
+            </div>
             <div className="rc-name">{o.name}</div>
             <div className="rc-desc">{o.desc}</div>
           </div>

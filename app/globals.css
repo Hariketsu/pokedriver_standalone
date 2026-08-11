@@ -1024,3 +1024,48 @@ body{
   .opt-btn{font-size:15px;padding:12px 16px}
   .scene-bg img{object-position:center 35%}
 }
+
+/* ---------- 结算屏补丁 ---------- */
+.over-stamp{
+  display:block;margin:0 auto 8px;
+  transform:rotate(-8deg);
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.55));
+}
+.over-title .px-icon,.new-record .px-icon,.over-bank .px-icon{vertical-align:-4px}
+
+/* ---------- 商店/休息屏补丁 ---------- */
+.shop-item .si-icon{display:flex;align-items:center;justify-content:center}
+.rest-card .rc-icon{line-height:0}
+.si-buy img{vertical-align:-2px;margin-right:2px}
+
+/* ---------- 学习线补丁 ---------- */
+.wrong-empty-icon{width:auto;height:auto;border-radius:0;background:none;box-shadow:none;color:inherit;font-size:0}
+.study-card .sc-icon img{display:block;margin:0 auto}
+.rq-ball{vertical-align:-2px;margin-right:6px}
+.modal h3 .px-icon{vertical-align:-4px;margin-right:8px}
+.exam-stamp{display:flex;justify-content:center;margin:-6px 0 6px;transform:rotate(-8deg)}
+.exam-controls .px-icon{vertical-align:-2px;margin-right:4px}
+
+/* ---------- 图鉴/设置屏补丁 ---------- */
+.dex-card-badge,.dex-card-badge.caught,.dex-card-badge.seen{padding:0;border:none;background:none;box-shadow:none;line-height:0}
+.dex-card-badge .px-icon{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.tag-c .px-icon{display:block}
+.set-toggle{padding:2px;border:none;background:none;line-height:0;cursor:pointer}
+.set-toggle .px-icon{display:block}
+.tc-icon{display:flex;align-items:center;justify-content:center}
+.tg-val .px-icon,.tnc-sub .px-icon,.title-foot .px-icon,.train-card .btn .px-icon{vertical-align:-2px;margin-right:2px}
+
+/* ---------- 地图屏补丁 ---------- */
+.map-node .px-icon{filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
+.map-node.done .px-icon,.map-node.locked .px-icon{filter:grayscale(.75) drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.map-node.boss .px-icon{filter:drop-shadow(0 2px 4px rgba(0,0,0,.75))}
+#hud-balls .ball-hud-item{display:inline-flex;align-items:center;gap:3px;margin-right:8px}
+#hud-balls .ball-hud-item:last-child{margin-right:0}
+#hud-balls .px-icon{filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+
+/* ---------- 队伍弹窗血条像素化 ---------- */
+.tm-poke .tm-hpbar{height:5px;background:rgba(8,10,24,.8)}
+.tm-poke .tm-hpbar i{
+  border-image:url(/art/ui/fill-hp-mini.png) 0 55 fill / 0 4px / 0 stretch;
+  border-radius:0;background:none;
+}

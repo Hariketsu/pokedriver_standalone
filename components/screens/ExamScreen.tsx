@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QUESTIONS } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
+import Icon from "@/components/ui/Icon";
 import {
   EXAM_PASS_SCORE,
   EXAM_Q_COUNT,
@@ -226,6 +227,9 @@ export default function ExamScreen() {
             {score}
             <span className="exam-score-max">/100</span>
           </div>
+          <div className="exam-stamp">
+            <Icon name={pass ? "stamp-pass" : "stamp-fail"} size={64} />
+          </div>
           <div className={"exam-verdict" + (pass ? " pass" : "")}>
             {session.timedOut ? "时间到 · " : ""}
             {pass ? "合格" : "未合格"}
@@ -352,7 +356,13 @@ export default function ExamScreen() {
               className={"btn btn-mini" + (flagged ? " exam-flag-on" : "")}
               onClick={toggleFlag}
             >
-              {flagged ? "★ 已标记" : "☆ 标记"}
+              {flagged ? (
+                <>
+                  <Icon name="item-star" size={14} /> 已标记
+                </>
+              ) : (
+                "☆ 标记"
+              )}
             </button>
             <button
               className="btn btn-mini"

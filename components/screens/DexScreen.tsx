@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { POKEMON } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { ICON } from "@/lib/icon";
+import Icon from "@/components/ui/Icon";
 import { AudioEngine } from "@/lib/audio";
 import { RARITY_LABEL } from "@/lib/formulas";
 
@@ -122,9 +123,15 @@ export default function DexScreen() {
                 <span className="dc-id">No.{String(p.id).padStart(3, "0")}</span>
                 <span className="dc-name">{seen ? p.c : "？？？"}</span>
               </span>
-              {caught && <span className="dex-card-badge caught">已捕获</span>}
+              {caught && (
+                <span className="dex-card-badge caught" aria-label="已捕获">
+                  <Icon name="badge-caught" size={18} alt="已捕获" />
+                </span>
+              )}
               {seen && !caught && (
-                <span className="dex-card-badge seen">遇见</span>
+                <span className="dex-card-badge seen" aria-label="遇见">
+                  <Icon name="badge-seen" size={18} alt="遇见" />
+                </span>
               )}
             </button>
           );

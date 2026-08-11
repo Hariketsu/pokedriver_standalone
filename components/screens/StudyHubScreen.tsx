@@ -4,6 +4,7 @@ import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import { QUESTIONS } from "@/data";
 import { EXAM_QUESTION_COUNT } from "@/data/constants";
+import Icon from "@/components/ui/Icon";
 
 export default function StudyHubScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -42,7 +43,15 @@ export default function StudyHubScreen() {
           disabled={!bankOk}
           onClick={() => bankOk && go("exam")}
         >
-          <div className="sc-icon">📝</div>
+          <div className="sc-icon">
+            <img
+              src="/art/icon-study.png"
+              className="px"
+              alt=""
+              style={{ height: 30, width: "auto" }}
+              draggable={false}
+            />
+          </div>
           <div className="sc-body">
             <div className="sc-title">科目一模拟</div>
             <div className="sc-desc">
@@ -58,7 +67,9 @@ export default function StudyHubScreen() {
           id="btn-hub-wrong"
           onClick={() => go("wrong")}
         >
-          <div className="sc-icon">📕</div>
+          <div className="sc-icon">
+            <Icon name="item-book" size={30} />
+          </div>
           <div className="sc-body">
             <div className="sc-title">
               错题本
@@ -81,7 +92,15 @@ export default function StudyHubScreen() {
           id="btn-hub-review"
           onClick={() => go("review")}
         >
-          <div className="sc-icon">📚</div>
+          <div className="sc-icon">
+            <img
+              src="/art/icon-dex.png"
+              className="px"
+              alt=""
+              style={{ height: 30, width: "auto" }}
+              draggable={false}
+            />
+          </div>
           <div className="sc-body">
             <div className="sc-title">题库浏览</div>
             <div className="sc-desc">

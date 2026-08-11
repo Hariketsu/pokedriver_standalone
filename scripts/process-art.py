@@ -273,18 +273,18 @@ SHEETS = [
 ]
 
 BG_MAP = {
-    (SHEET_DIR, "raw-10.png"): "bg-map",
-    (SHEET_DIR, "raw-11.png"): "bg-over-lose",
-    (SHEET_DIR, "raw-12.png"): "bg-rest",
-    (SHEET_DIR, "raw-13.png"): "bg-shop",
+    (SHEET_DIR, "raw-10.png"): "bg-battle",
+    (SHEET_DIR, "raw-11.png"): "bg-map",
+    (SHEET_DIR, "raw-12.png"): "bg-shop",
+    (SHEET_DIR, "raw-13.png"): "bg-rest",
     (SHEET_DIR, "raw-14.png"): "bg-over-win",
-    (SHEET_DIR, "raw-15.png"): "bg-battle",
-    (SHEET_DIR2, "raw-23.png"): "bg-map-16-9",
-    (SHEET_DIR2, "raw-24.png"): "bg-shop-16-9",
-    (SHEET_DIR2, "raw-25.png"): "bg-battle-16-9",
+    (SHEET_DIR, "raw-15.png"): "bg-over-lose",
+    (SHEET_DIR2, "raw-23.png"): "bg-battle-16-9",
+    (SHEET_DIR2, "raw-24.png"): "bg-map-16-9",
+    (SHEET_DIR2, "raw-25.png"): "bg-shop-16-9",
     (SHEET_DIR2, "raw-26.png"): "bg-rest-16-9",
-    (SHEET_DIR2, "raw-27.png"): "bg-over-lose-16-9",
-    (SHEET_DIR2, "raw-28.png"): "bg-over-win-16-9",
+    (SHEET_DIR2, "raw-27.png"): "bg-over-win-16-9",
+    (SHEET_DIR2, "raw-28.png"): "bg-over-lose-16-9",
 }
 
 

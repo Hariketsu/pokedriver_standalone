@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
+import Icon from "@/components/ui/Icon";
 
 const STARTERS = [
   { src: "/art/starter-volt.png", alt: "电系伙伴" },
@@ -152,7 +153,9 @@ export default function TitleScreen() {
           >
             <img className="tnc-icon" src="/art/icon-train.png" alt="" />
             <span className="tnc-label">养成</span>
-            <span className="tnc-sub">💰 {metaGold}</span>
+            <span className="tnc-sub">
+              <Icon name="item-coin" size={12} alt="金币" /> {metaGold}
+            </span>
           </button>
           <button
             type="button"
@@ -167,9 +170,19 @@ export default function TitleScreen() {
         </div>
 
         <div className="title-foot" id="title-stats">
-          {meta.bestScore > 0 && <span>🏆 {meta.bestScore} · </span>}
-          <span>📖 图鉴 {caught}/721</span>
-          <span> · 💰 金币 {metaGold} · </span>
+          {meta.bestScore > 0 && (
+            <span>
+              <Icon name="item-trophy" size={11} alt="最佳" /> {meta.bestScore}{" "}
+              ·{" "}
+            </span>
+          )}
+          <span>
+            <Icon name="item-book" size={11} alt="图鉴" /> 图鉴 {caught}/721
+          </span>
+          <span>
+            {" "}
+            · <Icon name="item-coin" size={11} alt="金币" /> 金币 {metaGold} ·{" "}
+          </span>
           <span>驾考题库 1034 题 · 仅供学习娱乐</span>
         </div>
       </div>

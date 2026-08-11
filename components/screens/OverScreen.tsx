@@ -2,6 +2,8 @@
 
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
+import SceneBg from "@/components/ui/SceneBg";
+import Icon from "@/components/ui/Icon";
 
 export default function OverScreen() {
   const gameOver = useGameStore((s) => s.gameOver);
@@ -67,22 +69,42 @@ export default function OverScreen() {
   ];
 
   return (
-    <section className="screen active" id="scr-over">
+    <section className="screen active has-scene" id="scr-over">
+      <SceneBg name={win ? "over-win" : "over-lose"} soft />
       <div className="over-inner">
+        <Icon
+          name={win ? "stamp-pass" : "stamp-fail"}
+          size={88}
+          alt={win ? "通过" : "失败"}
+          className="over-stamp"
+        />
         <div
           className={"over-title " + (win ? "win" : "lose")}
           id="over-title"
         >
-          {win ? "🏆 通关地牢！" : "💀 冒险失败"}
+          {win ? (
+            <>
+              <Icon name="item-trophy" size={30} alt="奖杯" /> 通关地牢！
+            </>
+          ) : (
+            <>
+              <Icon name="item-skull" size={30} alt="失败" /> 冒险失败
+            </>
+          )}
         </div>
         <div className="over-sub" id="over-sub">
           {win
             ? "你击败了最终 BOSS，驾驭了交规之力！"
             : `止步于第 ${floorsCleared || 1} 层`}
-          {isRecord && <div className="new-record">✨ 新纪录！</div>}
+          {isRecord && (
+            <div className="new-record">
+              <Icon name="badge-record" size={22} alt="新纪录" /> 新纪录！
+            </div>
+          )}
           {bankedMetaGold > 0 && (
             <div className="over-bank" id="over-bank">
-              养成金币 +{bankedMetaGold}（余额 {metaGold}）
+              <Icon name="item-coin" size={16} alt="金币" /> 养成金币 +
+              {bankedMetaGold}（余额 {metaGold}）
             </div>
           )}
         </div>
