@@ -257,7 +257,9 @@ SHEETS = [
         "dex-frame-rare", "dex-frame-legendary",
         "dex-frame-locked", None,
     ]),
-    (SHEET_DIR, "raw-08.png", 2, 2, ["examdot-idle", "examdot-answered", "examdot-flagged", "examdot-current"]),
+# raw-08 dropped: ChatGPT deviated — it drew a duplicate badge sheet
+# (flame/medal/check/X/ball/eye/toggles/arrow), not exam dots; content is
+# redundant with raw-21. Exam dots stay CSS (tiny numbered tiles).
     (SHEET_DIR2, "raw-21.png", 3, 3, [
         "badge-combo", "badge-record", "stamp-pass",
         "stamp-fail", "badge-caught", "badge-seen",

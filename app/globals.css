@@ -835,3 +835,192 @@ body{
   .title-starters img{height:62px}
   .title-starters img:nth-child(2){height:72px}
 }
+
+/* ================================================================
+   像素素材基座 (pixel-art foundation)
+   素材: /art/ui/*.png (ChatGPT 生成, process-art.py 切分)
+   约定: 9-slice 仅用于中段纯色素材; 动态宽度填充条用 border-image
+   固定端帽 + 中段拉伸; 固定比例装饰牌仍用整幅 <img> (见标题页)。
+   ================================================================ */
+.px,.px-icon{image-rendering:pixelated}
+.px-icon{display:inline-block;vertical-align:middle;object-fit:contain;flex:0 0 auto}
+
+/* ---------- 场景背景 ---------- */
+.screen.has-scene{background:var(--bg)}
+.has-scene>*:not(.scene-bg){position:relative;z-index:1}
+.battle-stage.has-scene{background:none}
+.scene-bg{position:absolute;inset:0;overflow:hidden;z-index:0}
+.scene-bg picture{display:contents}
+.scene-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.scene-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,22,.62) 0%,rgba(5,9,22,.38) 26%,rgba(5,9,22,.34) 60%,rgba(5,9,22,.66) 100%)}
+.scene-shade.soft{background:linear-gradient(180deg,rgba(5,9,22,.42) 0%,rgba(5,9,22,.18) 30%,rgba(5,9,22,.22) 62%,rgba(5,9,22,.55) 100%)}
+
+/* ---------- 面板 (panel-navy 系, slice 60) ---------- */
+.px-panel,
+.q-card,.enemy-card,.player-card,.shop-item,.rest-card,.study-card,.starter-card,
+.train-card,.train-gold,.rev-card,.tm-poke,.treasure-item,.set-row,.over-stat,
+.exam-q,.exam-intro-card,.exam-wrong-list,.ball-btn{
+  border-image:url(/art/ui/panel-navy.png) 60 fill / 12px / 0 stretch;
+  border-radius:0;background:none;box-shadow:none;
+}
+/* 原边框/阴影统一卸掉 */
+.q-card,.enemy-card,.player-card,.shop-item,.rest-card,.study-card,.starter-card,
+.train-card,.train-gold,.rev-card,.tm-poke,.treasure-item,.set-row,.over-stat,
+.exam-q,.exam-intro-card,.exam-wrong-list,.ball-btn{border-style:solid;border-color:transparent}
+
+/* ---------- 按钮 (btn 板, slice 70) ---------- */
+.btn{
+  border-image:url(/art/ui/btn-navy.png) 70 fill / 12px 14px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  padding:11px 18px;color:#fff;text-shadow:0 2px 0 rgba(6,16,44,.6);
+}
+.btn-primary{
+  border-image-source:url(/art/ui/btn-ltblue.png);
+  box-shadow:0 0 16px rgba(0,240,255,.3);text-shadow:0 2px 0 rgba(6,30,80,.65);
+}
+.btn-danger{border-image-source:url(/art/ui/btn-red.png);color:#fff;text-shadow:0 2px 0 rgba(60,4,10,.6)}
+.btn-gold{border-image-source:url(/art/ui/btn-gold.png);color:#4a2c00;text-shadow:0 1px 0 rgba(255,240,180,.55)}
+.btn-mini{border-image-width:8px 10px;padding:7px 12px}
+.btn-ghost{
+  border-image:none;border:1px solid var(--line);border-radius:10px;
+  background:rgba(10,16,34,.55);color:var(--dim);text-shadow:none;box-shadow:none;
+}
+
+/* ---------- chip (胶囊, slice 85 100) ---------- */
+.chip{
+  border-image:url(/art/ui/chip-silver.png) 70 110 fill / 13px 18px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  padding:6px 12px;color:var(--txt);text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+.chip.active{
+  border-image-source:url(/art/ui/chip-cyan.png);color:#fff;font-weight:800;
+  text-shadow:0 1px 0 rgba(6,30,80,.6);
+}
+
+/* ---------- 选项条 (opt 板, slice 90 150) ---------- */
+.opt-btn{
+  border-image:url(/art/ui/opt-idle.png) 90 150 fill / 16px 26px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  padding:10px 14px;color:#fff;text-shadow:0 1px 2px rgba(4,12,40,.65);
+}
+.opt-btn:active{transform:scale(.98)}
+.opt-btn .opt-key{
+  border-radius:6px;background:rgba(4,10,34,.55);border-color:rgba(255,255,255,.25);
+  color:#fff;text-shadow:none;
+}
+.opt-btn.correct{border-image-source:url(/art/ui/opt-correct.png);animation:none}
+.opt-btn.correct .opt-key{background:rgba(3,40,18,.55);border-color:rgba(255,255,255,.35);color:#d6ffe9}
+.opt-btn.wrong{border-image-source:url(/art/ui/opt-wrong.png);animation:shake .3s}
+.opt-btn.wrong .opt-key{background:rgba(60,4,10,.55);border-color:rgba(255,255,255,.35);color:#ffd9de}
+.opt-btn.reveal{border-image-source:url(/art/ui/opt-reveal.png)}
+.opt-btn.reveal .opt-key{background:rgba(70,44,0,.5);border-color:rgba(255,240,180,.4);color:#fff3c9}
+.opt-btn.exam-picked{
+  border-image-source:url(/art/ui/opt-reveal.png);box-shadow:none;
+}
+.opt-btn.exam-picked .opt-key{background:rgba(70,44,0,.55);border-color:rgba(255,240,180,.45);color:#fff3c9}
+
+/* ---------- 弹窗 / Toast ---------- */
+.modal{
+  border-image:url(/art/ui/panel-navy-raised.png) 60 fill / 14px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  padding:18px 16px;
+}
+#toast{
+  border-image:url(/art/ui/toast-strip.png) 50 60 fill / 12px 18px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);color:#fff;text-shadow:0 1px 2px rgba(4,12,40,.7);
+  padding:10px 22px;
+}
+
+/* ---------- 输入框 ---------- */
+.review-bar input,.px-input{
+  border-image:url(/art/ui/input-field.png) 55 60 fill / 12px 16px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  color:#fff;padding:9px 14px;
+}
+.review-bar input:focus,.px-input:focus{border-color:transparent;filter:brightness(1.25)}
+
+/* ---------- HUD ---------- */
+.hud-item,.bt-item{
+  border-image:url(/art/ui/chip-silver.png) 70 110 fill / 10px 14px / 0 stretch;
+  border-radius:0;background:none;border-style:solid;border-color:transparent;
+  color:var(--txt);text-shadow:0 1px 0 rgba(0,0,0,.45);
+}
+.hud-item.gold,.bt-item.gold{
+  border-image:url(/art/ui/hud-pill-gold.png) 85 34 85 168 fill / 13px 8px 13px 30px / 0 stretch;
+  color:#ffe9a8;text-shadow:0 1px 0 rgba(40,20,0,.7);padding-left:34px;
+}
+
+/* ---------- 连击徽章 ---------- */
+.combo-badge{
+  background:url(/art/ui/badge-combo.png) center/contain no-repeat;
+  border:none;box-shadow:none;border-radius:0;color:#fff;
+  min-width:58px;height:52px;padding:6px 8px 10px 14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;text-shadow:0 2px 2px rgba(60,10,0,.8);
+}
+
+/* ---------- 填充条 (动态宽度: 端帽固定, 中段拉伸) ---------- */
+.ec-hp,.pc-hp{background:rgba(8,10,24,.85);border-color:#3a2a44;border-radius:8px}
+.ec-hp-fill{
+  border-image:url(/art/ui/fill-hp-enemy.png) 0 55 fill / 0 10px / 0 stretch;
+  border-radius:0;background:none;
+}
+.pc-hp-fill{
+  border-image:url(/art/ui/fill-hp-player.png) 0 55 fill / 0 10px / 0 stretch;
+  border-radius:0;background:none;
+}
+.q-timer{height:10px;border-radius:5px;background:rgba(8,10,24,.8)}
+.q-timer-fill{
+  border-image:url(/art/ui/fill-timer.png) 0 55 fill / 0 8px / 0 stretch;
+  border-radius:0;background:none;
+}
+.q-timer-fill.low{border-image-source:url(/art/ui/fill-timer-low.png)}
+.team-slot .ts-hp{height:4px;background:rgba(8,10,24,.8)}
+.team-slot .ts-hp i{
+  border-image:url(/art/ui/fill-hp-mini.png) 0 55 fill / 0 4px / 0 stretch;
+  border-radius:0;background:none;
+}
+
+/* ---------- 图鉴卡框 (dex-frame 系, slice 64) ---------- */
+.dex-card,.dex-detail-card{border-style:solid;border-color:transparent;border-radius:0}
+.dex-card{background:rgba(10,14,34,.92);box-shadow:0 6px 14px rgba(0,0,0,.3)}
+.dex-card.r-c{border-image:url(/art/ui/dex-frame-common.png) 64 fill / 10px / 0 stretch;background:none}
+.dex-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 16px rgba(0,0,0,.3),0 0 14px rgba(0,240,255,.12)}
+.dex-card.r-r{border-image:url(/art/ui/dex-frame-rare.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 18px rgba(0,0,0,.32),0 0 16px rgba(255,215,0,.16)}
+.dex-card.r-l{border-image:url(/art/ui/dex-frame-legendary.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 8px 20px rgba(0,0,0,.38),0 0 20px rgba(255,0,68,.22)}
+.dex-card.unknown{background:rgba(10,14,34,.6);border:1px solid var(--line);border-image:none;border-radius:10px}
+.dex-detail-card.r-c{border-image:url(/art/ui/dex-frame-common.png) 64 fill / 12px / 0 stretch;background:none}
+.dex-detail-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.png) 64 fill / 12px / 0 stretch;background:none}
+.dex-detail-card.r-r{border-image:url(/art/ui/dex-frame-rare.png) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 22px rgba(255,215,0,.15)}
+.dex-detail-card.r-l{border-image:url(/art/ui/dex-frame-legendary.png) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 26px rgba(255,0,68,.2)}
+.dex-detail-card{padding:20px 16px 16px}
+
+/* ---------- 设置: 滑块 ---------- */
+.set-row input[type=range]{
+  -webkit-appearance:none;appearance:none;height:14px;border-radius:0;
+  background:url(/art/ui/slider-track.png) center/100% 100% no-repeat;
+  outline:none;
+}
+.set-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:26px;height:26px;border:none;
+  background:url(/art/ui/knob-gold.png) center/contain no-repeat;cursor:pointer;
+}
+.set-row input[type=range]::-moz-range-thumb{
+  width:26px;height:26px;border:none;background:url(/art/ui/knob-gold.png) center/contain no-repeat;cursor:pointer;
+}
+
+/* ---------- 场景屏的页头/页脚去分割线 ---------- */
+.screen.has-scene .page-head,.screen.has-scene .page-foot,
+.screen.has-scene .hud-bar,.screen.has-scene .dex-filter,
+.screen.has-scene .review-bar,.screen.has-scene .map-legend{
+  border-color:rgba(38,53,94,.5);background:rgba(7,11,22,.45);
+}
+.screen.has-scene .page-head h2{text-shadow:0 2px 4px rgba(0,0,0,.7)}
+.screen.has-scene .hud-bar{backdrop-filter:blur(4px)}
+
+/* ---------- 桌面端补丁 ---------- */
+@media (min-width:768px){
+  .opt-btn{font-size:15px;padding:12px 16px}
+  .scene-bg img{object-position:center 35%}
+}
