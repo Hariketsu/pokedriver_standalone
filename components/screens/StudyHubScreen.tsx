@@ -47,7 +47,7 @@ export default function StudyHubScreen() {
         >
           <div className="sc-icon">
             <img
-              src="/art/icon-study.png"
+              src="/art/icon-study.webp"
               className="px"
               alt=""
               style={{ height: 30, width: "auto" }}
@@ -96,7 +96,7 @@ export default function StudyHubScreen() {
         >
           <div className="sc-icon">
             <img
-              src="/art/icon-dex.png"
+              src="/art/icon-dex.webp"
               className="px"
               alt=""
               style={{ height: 30, width: "auto" }}

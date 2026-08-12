@@ -18,7 +18,7 @@ export default function Icon({
   return (
     <img
       className={className ? `px-icon ${className}` : "px-icon"}
-      src={`/art/ui/${name}.png`}
+      src={`/art/ui/${name}.webp`}
       alt={alt}
       style={{ height: size, width: "auto" }}
       draggable={false}

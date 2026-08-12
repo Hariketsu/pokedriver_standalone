@@ -838,7 +838,7 @@ body{
 
 /* ================================================================
    像素素材基座 (pixel-art foundation)
-   素材: /art/ui/*.png (ChatGPT 生成, process-art.py 切分)
+   素材: /art/ui/*.webp (ChatGPT 生成, process-art.py 切分)
    约定: 9-slice 仅用于中段纯色素材; 动态宽度填充条用 border-image
    固定端帽 + 中段拉伸; 固定比例装饰牌仍用整幅 <img> (见标题页)。
    ================================================================ */
@@ -865,7 +865,7 @@ body{
 .q-card,.enemy-card,.player-card,.shop-item,.rest-card,.study-card,.starter-card,
 .train-card,.train-gold,.rev-card,.tm-poke,.treasure-item,.set-row,.over-stat,
 .exam-q,.exam-intro-card,.exam-wrong-list,.ball-btn{
-  border-image:url(/art/ui/panel-navy.png) 60 fill / 12px / 0 stretch;
+  border-image:url(/art/ui/panel-navy.webp) 60 fill / 12px / 0 stretch;
   border-radius:0;background:none;box-shadow:none;
 }
 /* 原边框/阴影统一卸掉 */
@@ -875,16 +875,16 @@ body{
 
 /* ---------- 按钮 (btn 板, slice 70) ---------- */
 .btn{
-  border-image:url(/art/ui/btn-navy.png) 70 fill / 12px 14px / 0 stretch;
+  border-image:url(/art/ui/btn-navy.webp) 70 fill / 12px 14px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   padding:11px 18px;color:#fff;text-shadow:0 2px 0 rgba(6,16,44,.6);
 }
 .btn-primary{
-  border-image-source:url(/art/ui/btn-ltblue.png);
+  border-image-source:url(/art/ui/btn-ltblue.webp);
   box-shadow:0 0 16px rgba(0,240,255,.3);text-shadow:0 2px 0 rgba(6,30,80,.65);
 }
-.btn-danger{border-image-source:url(/art/ui/btn-red.png);color:#fff;text-shadow:0 2px 0 rgba(60,4,10,.6)}
-.btn-gold{border-image-source:url(/art/ui/btn-gold.png);color:#4a2c00;text-shadow:0 1px 0 rgba(255,240,180,.55)}
+.btn-danger{border-image-source:url(/art/ui/btn-red.webp);color:#fff;text-shadow:0 2px 0 rgba(60,4,10,.6)}
+.btn-gold{border-image-source:url(/art/ui/btn-gold.webp);color:#4a2c00;text-shadow:0 1px 0 rgba(255,240,180,.55)}
 .btn-mini{border-image-width:8px 10px;padding:7px 12px}
 .btn-ghost{
   border-image:none;border:1px solid var(--line);border-radius:10px;
@@ -893,18 +893,18 @@ body{
 
 /* ---------- chip (胶囊, slice 85 100) ---------- */
 .chip{
-  border-image:url(/art/ui/chip-silver.png) 70 110 fill / 13px 18px / 0 stretch;
+  border-image:url(/art/ui/chip-silver.webp) 70 110 fill / 13px 18px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   padding:6px 12px;color:var(--txt);text-shadow:0 1px 0 rgba(0,0,0,.5);
 }
 .chip.active{
-  border-image-source:url(/art/ui/chip-cyan.png);color:#fff;font-weight:800;
+  border-image-source:url(/art/ui/chip-cyan.webp);color:#fff;font-weight:800;
   text-shadow:0 1px 0 rgba(6,30,80,.6);
 }
 
 /* ---------- 选项条 (opt 板, slice 90 150) ---------- */
 .opt-btn{
-  border-image:url(/art/ui/opt-idle.png) 90 150 fill / 16px 26px / 0 stretch;
+  border-image:url(/art/ui/opt-idle.webp) 90 150 fill / 16px 26px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   padding:10px 14px;color:#fff;text-shadow:0 1px 2px rgba(4,12,40,.65);
 }
@@ -913,25 +913,25 @@ body{
   border-radius:6px;background:rgba(4,10,34,.55);border-color:rgba(255,255,255,.25);
   color:#fff;text-shadow:none;
 }
-.opt-btn.correct{border-image-source:url(/art/ui/opt-correct.png);animation:none}
+.opt-btn.correct{border-image-source:url(/art/ui/opt-correct.webp);animation:none}
 .opt-btn.correct .opt-key{background:rgba(3,40,18,.55);border-color:rgba(255,255,255,.35);color:#d6ffe9}
-.opt-btn.wrong{border-image-source:url(/art/ui/opt-wrong.png);animation:shake .3s}
+.opt-btn.wrong{border-image-source:url(/art/ui/opt-wrong.webp);animation:shake .3s}
 .opt-btn.wrong .opt-key{background:rgba(60,4,10,.55);border-color:rgba(255,255,255,.35);color:#ffd9de}
-.opt-btn.reveal{border-image-source:url(/art/ui/opt-reveal.png)}
+.opt-btn.reveal{border-image-source:url(/art/ui/opt-reveal.webp)}
 .opt-btn.reveal .opt-key{background:rgba(70,44,0,.5);border-color:rgba(255,240,180,.4);color:#fff3c9}
 .opt-btn.exam-picked{
-  border-image-source:url(/art/ui/opt-reveal.png);box-shadow:none;
+  border-image-source:url(/art/ui/opt-reveal.webp);box-shadow:none;
 }
 .opt-btn.exam-picked .opt-key{background:rgba(70,44,0,.55);border-color:rgba(255,240,180,.45);color:#fff3c9}
 
 /* ---------- 弹窗 / Toast ---------- */
 .modal{
-  border-image:url(/art/ui/panel-navy-raised.png) 60 fill / 14px / 0 stretch;
+  border-image:url(/art/ui/panel-navy-raised.webp) 60 fill / 14px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   padding:18px 16px;
 }
 #toast{
-  border-image:url(/art/ui/toast-strip.png) 50 60 fill / 12px 18px / 0 stretch;
+  border-image:url(/art/ui/toast-strip.webp) 50 60 fill / 12px 18px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   box-shadow:0 4px 16px rgba(0,0,0,.5);color:#fff;text-shadow:0 1px 2px rgba(4,12,40,.7);
   padding:10px 22px;
@@ -939,7 +939,7 @@ body{
 
 /* ---------- 输入框 ---------- */
 .review-bar input,.px-input{
-  border-image:url(/art/ui/input-field.png) 55 60 fill / 12px 16px / 0 stretch;
+  border-image:url(/art/ui/input-field.webp) 55 60 fill / 12px 16px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   color:#fff;padding:9px 14px;
 }
@@ -947,18 +947,18 @@ body{
 
 /* ---------- HUD ---------- */
 .hud-item,.bt-item{
-  border-image:url(/art/ui/chip-silver.png) 70 110 fill / 10px 14px / 0 stretch;
+  border-image:url(/art/ui/chip-silver.webp) 70 110 fill / 10px 14px / 0 stretch;
   border-radius:0;background:none;border-style:solid;border-color:transparent;
   color:var(--txt);text-shadow:0 1px 0 rgba(0,0,0,.45);
 }
 .hud-item.gold,.bt-item.gold{
-  border-image:url(/art/ui/hud-pill-gold.png) 85 34 85 168 fill / 13px 8px 13px 30px / 0 stretch;
+  border-image:url(/art/ui/hud-pill-gold.webp) 85 34 85 168 fill / 13px 8px 13px 30px / 0 stretch;
   color:#ffe9a8;text-shadow:0 1px 0 rgba(40,20,0,.7);padding-left:34px;
 }
 
 /* ---------- 连击徽章 ---------- */
 .combo-badge{
-  background:url(/art/ui/badge-combo.png) center/contain no-repeat;
+  background:url(/art/ui/badge-combo.webp) center/contain no-repeat;
   border:none;box-shadow:none;border-radius:0;color:#fff;
   min-width:58px;height:52px;padding:6px 8px 10px 14px;
   display:flex;align-items:center;justify-content:center;
@@ -968,51 +968,51 @@ body{
 /* ---------- 填充条 (动态宽度: 端帽固定, 中段拉伸) ---------- */
 .ec-hp,.pc-hp{background:rgba(8,10,24,.85);border-color:#3a2a44;border-radius:8px}
 .ec-hp-fill{
-  border-image:url(/art/ui/fill-hp-enemy.png) 0 55 fill / 0 10px / 0 stretch;
+  border-image:url(/art/ui/fill-hp-enemy.webp) 0 55 fill / 0 10px / 0 stretch;
   border-radius:0;background:none;
 }
 .pc-hp-fill{
-  border-image:url(/art/ui/fill-hp-player.png) 0 55 fill / 0 10px / 0 stretch;
+  border-image:url(/art/ui/fill-hp-player.webp) 0 55 fill / 0 10px / 0 stretch;
   border-radius:0;background:none;
 }
 .q-timer{height:10px;border-radius:5px;background:rgba(8,10,24,.8)}
 .q-timer-fill{
-  border-image:url(/art/ui/fill-timer.png) 0 55 fill / 0 8px / 0 stretch;
+  border-image:url(/art/ui/fill-timer.webp) 0 55 fill / 0 8px / 0 stretch;
   border-radius:0;background:none;
 }
-.q-timer-fill.low{border-image-source:url(/art/ui/fill-timer-low.png)}
+.q-timer-fill.low{border-image-source:url(/art/ui/fill-timer-low.webp)}
 .team-slot .ts-hp{height:4px;background:rgba(8,10,24,.8)}
 .team-slot .ts-hp i{
-  border-image:url(/art/ui/fill-hp-mini.png) 0 55 fill / 0 4px / 0 stretch;
+  border-image:url(/art/ui/fill-hp-mini.webp) 0 55 fill / 0 4px / 0 stretch;
   border-radius:0;background:none;
 }
 
 /* ---------- 图鉴卡框 (dex-frame 系, slice 64) ---------- */
 .dex-card,.dex-detail-card{border-style:solid;border-color:transparent;border-radius:0}
 .dex-card{background:rgba(10,14,34,.92);box-shadow:0 6px 14px rgba(0,0,0,.3)}
-.dex-card.r-c{border-image:url(/art/ui/dex-frame-common.png) 64 fill / 10px / 0 stretch;background:none}
-.dex-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 16px rgba(0,0,0,.3),0 0 14px rgba(0,240,255,.12)}
-.dex-card.r-r{border-image:url(/art/ui/dex-frame-rare.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 18px rgba(0,0,0,.32),0 0 16px rgba(255,215,0,.16)}
-.dex-card.r-l{border-image:url(/art/ui/dex-frame-legendary.png) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 8px 20px rgba(0,0,0,.38),0 0 20px rgba(255,0,68,.22)}
-.dex-card.unknown{border-image:url(/art/ui/dex-frame-locked.png) 64 fill / 10px / 0 stretch;background:none;border-color:transparent}
-.dex-detail-card.r-c{border-image:url(/art/ui/dex-frame-common.png) 64 fill / 12px / 0 stretch;background:none}
-.dex-detail-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.png) 64 fill / 12px / 0 stretch;background:none}
-.dex-detail-card.r-r{border-image:url(/art/ui/dex-frame-rare.png) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 22px rgba(255,215,0,.15)}
-.dex-detail-card.r-l{border-image:url(/art/ui/dex-frame-legendary.png) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 26px rgba(255,0,68,.2)}
+.dex-card.r-c{border-image:url(/art/ui/dex-frame-common.webp) 64 fill / 10px / 0 stretch;background:none}
+.dex-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.webp) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 16px rgba(0,0,0,.3),0 0 14px rgba(0,240,255,.12)}
+.dex-card.r-r{border-image:url(/art/ui/dex-frame-rare.webp) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 6px 18px rgba(0,0,0,.32),0 0 16px rgba(255,215,0,.16)}
+.dex-card.r-l{border-image:url(/art/ui/dex-frame-legendary.webp) 64 fill / 10px / 0 stretch;background:none;box-shadow:0 8px 20px rgba(0,0,0,.38),0 0 20px rgba(255,0,68,.22)}
+.dex-card.unknown{border-image:url(/art/ui/dex-frame-locked.webp) 64 fill / 10px / 0 stretch;background:none;border-color:transparent}
+.dex-detail-card.r-c{border-image:url(/art/ui/dex-frame-common.webp) 64 fill / 12px / 0 stretch;background:none}
+.dex-detail-card.r-u{border-image:url(/art/ui/dex-frame-uncommon.webp) 64 fill / 12px / 0 stretch;background:none}
+.dex-detail-card.r-r{border-image:url(/art/ui/dex-frame-rare.webp) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 22px rgba(255,215,0,.15)}
+.dex-detail-card.r-l{border-image:url(/art/ui/dex-frame-legendary.webp) 64 fill / 12px / 0 stretch;background:none;box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 26px rgba(255,0,68,.2)}
 .dex-detail-card{padding:20px 16px 16px}
 
 /* ---------- 设置: 滑块 ---------- */
 .set-row input[type=range]{
   -webkit-appearance:none;appearance:none;height:14px;border-radius:0;
-  background:url(/art/ui/slider-track.png) center/100% 100% no-repeat;
+  background:url(/art/ui/slider-track.webp) center/100% 100% no-repeat;
   outline:none;
 }
 .set-row input[type=range]::-webkit-slider-thumb{
   -webkit-appearance:none;appearance:none;width:26px;height:26px;border:none;
-  background:url(/art/ui/knob-gold.png) center/contain no-repeat;cursor:pointer;
+  background:url(/art/ui/knob-gold.webp) center/contain no-repeat;cursor:pointer;
 }
 .set-row input[type=range]::-moz-range-thumb{
-  width:26px;height:26px;border:none;background:url(/art/ui/knob-gold.png) center/contain no-repeat;cursor:pointer;
+  width:26px;height:26px;border:none;background:url(/art/ui/knob-gold.webp) center/contain no-repeat;cursor:pointer;
 }
 
 /* ---------- 场景屏的页头/页脚去分割线 ---------- */
@@ -1071,48 +1071,48 @@ body{
 /* ---------- 队伍弹窗血条像素化 ---------- */
 .tm-poke .tm-hpbar{height:5px;background:rgba(8,10,24,.8)}
 .tm-poke .tm-hpbar i{
-  border-image:url(/art/ui/fill-hp-mini.png) 0 55 fill / 0 4px / 0 stretch;
+  border-image:url(/art/ui/fill-hp-mini.webp) 0 55 fill / 0 4px / 0 stretch;
   border-radius:0;background:none;
 }
 
 /* ---------- 素材多样化补丁 (bar-frame/panel-purple/panel-green/fill-exp/fill-hp-low) ---------- */
 /* 战斗: 敌方紫板, 我方凸起蓝板 */
-.enemy-card{border-image-source:url(/art/ui/panel-purple.png)}
-.player-card{border-image-source:url(/art/ui/panel-navy-raised.png)}
+.enemy-card{border-image-source:url(/art/ui/panel-purple.webp)}
+.player-card{border-image-source:url(/art/ui/panel-navy-raised.webp)}
 /* 战斗: 血条/经验条轨道用 bar-frame 系, 低血变黄 */
 .ec-hp,.pc-hp{
   height:18px;padding:3px 8px;box-sizing:border-box;
   border:none;border-radius:0;background:none;overflow:visible;
-  border-image:url(/art/ui/bar-frame.png) 0 60 fill / 0 12px / 0 stretch;
+  border-image:url(/art/ui/bar-frame.webp) 0 60 fill / 0 12px / 0 stretch;
 }
-.pc-hp{border-image-source:url(/art/ui/bar-frame-cyan.png)}
+.pc-hp{border-image-source:url(/art/ui/bar-frame-cyan.webp)}
 .ec-hp span,.pc-hp span{line-height:18px}
 .ec-hp-fill,.pc-hp-fill{height:100%;border-radius:0}
-.pc-hp-fill.low{border-image-source:url(/art/ui/fill-hp-low.png)}
+.pc-hp-fill.low{border-image-source:url(/art/ui/fill-hp-low.webp)}
 .pc-xp{
   position:relative;height:9px;margin-top:4px;padding:1px 6px;box-sizing:border-box;
-  border-image:url(/art/ui/bar-frame-gray.png) 0 50 fill / 0 6px / 0 stretch;
+  border-image:url(/art/ui/bar-frame-gray.webp) 0 50 fill / 0 6px / 0 stretch;
 }
 .pc-xp-fill{
   height:100%;
-  border-image:url(/art/ui/fill-exp.png) 0 55 fill / 0 5px / 0 stretch;
+  border-image:url(/art/ui/fill-exp.webp) 0 55 fill / 0 5px / 0 stretch;
 }
 /* 休息点: 绿板与商店区分 */
-.rest-card{border-image-source:url(/art/ui/panel-green.png)}
+.rest-card{border-image-source:url(/art/ui/panel-green.webp)}
 /* 结算: 凸起板 + 图标行 */
-.over-stat{border-image-source:url(/art/ui/panel-navy-raised.png)}
+.over-stat{border-image-source:url(/art/ui/panel-navy-raised.webp)}
 .over-stat .os-k{display:flex;align-items:center;justify-content:center;gap:5px}
 
 /* ---------- 学习线场景化 + 桌面战斗三栏 ---------- */
 /* 学习屏文字压一下场景图,保证可读 */
 .screen.has-scene .dim,.screen.has-scene .study-hub-lead,.screen.has-scene .train-hint{text-shadow:0 1px 3px rgba(0,0,0,.85)}
 /* 学习中心三卡: 标题页同款亮光板(蓝/紫/绿) */
-.study-card{border-image:url(/art/ui-plate-blue.png) 100 220 fill / 18px 36px / 0 stretch}
-.study-card#btn-hub-wrong{border-image-source:url(/art/ui-plate-purple.png)}
-.study-card#btn-hub-review{border-image-source:url(/art/ui-plate-green.png)}
+.study-card{border-image:url(/art/ui-plate-blue.webp) 100 220 fill / 18px 36px / 0 stretch}
+.study-card#btn-hub-wrong{border-image-source:url(/art/ui-plate-purple.webp)}
+.study-card#btn-hub-review{border-image-source:url(/art/ui-plate-green.webp)}
 /* 养成训练: 紫=攻击 绿=生命, 赛道旗横幅 */
-.train-card{border-image:url(/art/ui-plate-purple.png) 100 220 fill / 18px 36px / 0 stretch}
-.train-card + .train-card{border-image-source:url(/art/ui-plate-green.png)}
+.train-card{border-image:url(/art/ui-plate-purple.webp) 100 220 fill / 18px 36px / 0 stretch}
+.train-card + .train-card{border-image-source:url(/art/ui-plate-green.webp)}
 .train-flag{display:block;width:min(92%,480px);height:42px;object-fit:fill;margin:2px auto 0;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
 /* 桌面战斗: 队伍列左 / 题目中 / 道具列右, 填满两侧 */
 @media (min-width:1000px){

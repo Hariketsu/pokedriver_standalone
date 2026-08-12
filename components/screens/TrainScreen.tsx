@@ -40,7 +40,7 @@ export default function TrainScreen() {
 
       <img
         className="train-flag px"
-        src="/art/strip-checkers.png"
+        src="/art/strip-checkers.webp"
         alt=""
         draggable={false}
       />

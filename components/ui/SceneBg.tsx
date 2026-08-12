@@ -25,9 +25,9 @@ export default function SceneBg({
   return (
     <div className="scene-bg" aria-hidden="true">
       <picture>
-        <source media="(min-width:768px)" srcSet={`/art/bg-${name}-16-9.png`} />
+        <source media="(min-width:768px)" srcSet={`/art/bg-${name}-16-9.webp`} />
         <img
-          src={`/art/bg-${name}.png`}
+          src={`/art/bg-${name}.webp`}
           alt=""
           style={position ? { objectPosition: position } : undefined}
         />

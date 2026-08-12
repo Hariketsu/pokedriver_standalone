@@ -155,8 +155,8 @@ export default function GameApp() {
           <section className="screen active" id="scr-title">
             <div className="title-bg">
               <picture>
-                <source media="(min-width:768px)" srcSet="/art/bg-16-9.png" />
-                <img className="title-bg-img" src="/art/hero-bg.png" alt="" />
+                <source media="(min-width:768px)" srcSet="/art/bg-16-9.webp" />
+                <img className="title-bg-img" src="/art/hero-bg.webp" alt="" />
               </picture>
               <div className="title-shade" />
             </div>
@@ -164,7 +164,7 @@ export default function GameApp() {
               <div className="title-logo">
                 <img
                   className="logo-img"
-                  src="/art/ui-logo.png"
+                  src="/art/ui-logo.webp"
                   alt="宝可驾 · 交规地牢"
                 />
               </div>

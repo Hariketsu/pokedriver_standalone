@@ -6,9 +6,9 @@ import { AudioEngine } from "@/lib/audio";
 import Icon from "@/components/ui/Icon";
 
 const STARTERS = [
-  { src: "/art/starter-volt.png", alt: "电系伙伴" },
-  { src: "/art/starter-leaf.png", alt: "叶系伙伴" },
-  { src: "/art/starter-cloud.png", alt: "云系伙伴" },
+  { src: "/art/starter-volt.webp", alt: "电系伙伴" },
+  { src: "/art/starter-leaf.webp", alt: "叶系伙伴" },
+  { src: "/art/starter-cloud.webp", alt: "云系伙伴" },
 ] as const;
 
 export default function TitleScreen() {
@@ -65,8 +65,8 @@ export default function TitleScreen() {
     <section className="screen active" id="scr-title">
       <div className="title-bg">
         <picture>
-          <source media="(min-width:768px)" srcSet="/art/bg-16-9.png" />
-          <img className="title-bg-img" src="/art/hero-bg.png" alt="" />
+          <source media="(min-width:768px)" srcSet="/art/bg-16-9.webp" />
+          <img className="title-bg-img" src="/art/hero-bg.webp" alt="" />
         </picture>
         <div className="title-shade" />
       </div>
@@ -78,12 +78,12 @@ export default function TitleScreen() {
         aria-label="设置"
         onClick={() => go("settings")}
       >
-        <img src="/art/ui-settings.png" alt="设置" />
+        <img src="/art/ui-settings.webp" alt="设置" />
       </button>
 
       <div className="title-inner">
         <div className="title-logo">
-          <img className="logo-img" src="/art/ui-logo.png" alt="宝可驾 · 交规地牢" />
+          <img className="logo-img" src="/art/ui-logo.webp" alt="宝可驾 · 交规地牢" />
         </div>
 
         <div className="title-starters">
@@ -99,10 +99,10 @@ export default function TitleScreen() {
               id="btn-continue"
               onClick={onContinue}
             >
-              <img className="bp-bg" src="/art/ui-plate-gold-long.png" alt="" />
+              <img className="bp-bg" src="/art/ui-plate-gold-long.webp" alt="" />
               <span className="bp-content">
                 <span className="bp-label bp-label-dark">
-                  <img className="bp-play" src="/art/ui-play.png" alt="" />
+                  <img className="bp-play" src="/art/ui-play.webp" alt="" />
                   继续冒险
                 </span>
                 {saveInfo && (
@@ -115,7 +115,7 @@ export default function TitleScreen() {
             </button>
           )}
           <button className="btn-plate" id="btn-start" onClick={onPrimaryStart}>
-            <img className="bp-bg" src="/art/ui-plate-blue.png" alt="" />
+            <img className="bp-bg" src="/art/ui-plate-blue.webp" alt="" />
             <span className="bp-content">
               <span className="bp-label">新的冒险</span>
             </span>
@@ -129,7 +129,7 @@ export default function TitleScreen() {
             id="btn-dex"
             onClick={() => go("dex")}
           >
-            <img className="tnc-icon" src="/art/icon-dex.png" alt="" />
+            <img className="tnc-icon" src="/art/icon-dex.webp" alt="" />
             <span className="tnc-label">图鉴</span>
             <span className="tnc-sub">{caught}/721</span>
           </button>
@@ -139,7 +139,7 @@ export default function TitleScreen() {
             id="btn-study"
             onClick={() => go("study")}
           >
-            <img className="tnc-icon" src="/art/icon-study.png" alt="" />
+            <img className="tnc-icon" src="/art/icon-study.webp" alt="" />
             <span className="tnc-label">学习</span>
             <span className="tnc-sub">
               {wrongCount > 0 ? `错题 ${wrongCount}` : "模考 · 题库"}
@@ -151,7 +151,7 @@ export default function TitleScreen() {
             id="btn-train"
             onClick={() => go("train")}
           >
-            <img className="tnc-icon" src="/art/icon-train.png" alt="" />
+            <img className="tnc-icon" src="/art/icon-train.webp" alt="" />
             <span className="tnc-label">养成</span>
             <span className="tnc-sub">
               <Icon name="item-coin" size={12} alt="金币" /> {metaGold}
@@ -163,7 +163,7 @@ export default function TitleScreen() {
             id="btn-settings-grid"
             onClick={() => go("settings")}
           >
-            <img className="tnc-icon" src="/art/icon-settings.png" alt="" />
+            <img className="tnc-icon" src="/art/icon-settings.webp" alt="" />
             <span className="tnc-label">设置</span>
             <span className="tnc-sub">音量 · 难度</span>
           </button>
