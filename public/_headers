@@ -1,0 +1,5 @@
+# Cloudflare Pages 安全响应头(原 next.config.ts 的 headers(),静态导出不支持)
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

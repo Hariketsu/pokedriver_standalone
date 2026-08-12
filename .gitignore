@@ -44,5 +44,4 @@ next-env.d.ts
 
 # local reference & scratch dirs — keep out of the open-source repo
 /ref/
-/public/
 /art-scratch/
