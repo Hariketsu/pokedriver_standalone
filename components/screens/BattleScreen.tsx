@@ -38,18 +38,17 @@ export default function BattleScreen() {
   const commitEnemyHit = useGameStore((s) => s.commitEnemyHit);
   const resolvePlayerFaint = useGameStore((s) => s.resolvePlayerFaint);
   const trySwitch = useGameStore((s) => s.trySwitch);
-  const useBattlePotion = useGameStore((s) => s.useBattlePotion);
+  const consumeBattlePotion = useGameStore((s) => s.useBattlePotion);
   const openCapture = useGameStore((s) => s.openCapture);
   const lastAnswer = useGameStore((s) => s.lastAnswer);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fxLayerRef = useRef<HTMLDivElement>(null);
   const [fxOk, setFxOk] = useState(false);
-  const [optState, setOptState] = useState<
-    Record<number, "correct" | "wrong" | "reveal" | undefined>
-  >({});
-  const [lockedOpts, setLockedOpts] = useState(false);
-  const [comboBump, setComboBump] = useState(0);
+  const [optState, setOptState] = useState<{
+    questionId: string | null;
+    values: Record<number, "correct" | "wrong" | "reveal" | undefined>;
+  }>({ questionId: null, values: {} });
   const flowLock = useRef(false);
   const processedAnswer = useRef<typeof lastAnswer>(null);
   /** 区分每一场战斗（同 enemy id 也可能连续两场） */
@@ -93,6 +92,9 @@ export default function BattleScreen() {
   const enemyRarity = enemyId != null ? PKMN_BY_ID[enemyId]?.r : undefined;
   const enemyIsBoss = battle?.enemy.isBoss;
   const combo = run?.combo ?? 0;
+  const battlePhase = battle?.phase;
+  const battleLocked = battle?.locked;
+  const questionId = battle?.q?.id;
 
   useEffect(() => {
     if (!fxOk || !BattleFX.ok || playerId == null || enemyId == null || !enemyRarity)
@@ -134,90 +136,10 @@ export default function BattleScreen() {
 
   // Timer tick（不要依赖整个 battle 对象，否则每 0.1s setState 都会重启 interval）
   useEffect(() => {
-    if (!battle || battle.phase !== "question" || battle.locked) return;
+    if (battlePhase !== "question" || battleLocked) return;
     const id = setInterval(() => tickTimer(0.1), 100);
     return () => clearInterval(id);
-  }, [battle?.phase, battle?.locked, battle?.q?.id, tickTimer]);
-
-  // Reset opt UI when new question
-  useEffect(() => {
-    if (battle?.phase === "question" && battle.q) {
-      setOptState({});
-      setLockedOpts(false);
-      flowLock.current = false;
-      processedAnswer.current = null;
-    }
-  }, [battle?.q?.id, battle?.phase]);
-
-  // Process answer outcome → combat FX
-  useEffect(() => {
-    if (!lastAnswer || !battle || !run) return;
-    if (PROCESSED_ANSWER_IDS.has(lastAnswer.id)) return;
-    if (processedAnswer.current === lastAnswer) return;
-    PROCESSED_ANSWER_IDS.add(lastAnswer.id);
-    if (PROCESSED_ANSWER_IDS.size > PROCESSED_ANSWER_CAP) {
-      // 简单裁剪：清空后只保留本次 id（战斗跨度内 id 单调递增，旧 id 无意义）
-      PROCESSED_ANSWER_IDS.clear();
-      PROCESSED_ANSWER_IDS.add(lastAnswer.id);
-    }
-    processedAnswer.current = lastAnswer;
-    if (flowLock.current) return;
-    flowLock.current = true;
-
-    const layer = fxLayerRef.current;
-    const q = battle.q;
-
-    if (lastAnswer.correct) {
-      setLockedOpts(true);
-      setComboBump((n) => n + 1);
-      const { dmg, crit, fast } = lastAnswer;
-      AudioEngine.sfx("correct");
-      setTimeout(() => AudioEngine.sfx("coin"), 250);
-      if (BattleFX.ok) BattleFX.comboAura(run.combo);
-
-      // 与原版一致：动画命中帧再扣血 / 结算胜利
-      const doHit = () => {
-        const hit = commitPlayerHit(dmg);
-        AudioEngine.sfx(crit ? "crit" : "hit");
-        if (crit) shakeScreen();
-        spawnDmg(layer, 66, 38, `-${dmg}`, crit ? "#ffd700" : "#ff6688", crit);
-        if (crit) spawnFxText(layer, 66, 30, "暴击！", "#ffd700");
-        if (fast) spawnFxText(layer, 30, 55, "快速作答 +1", "#00f0ff");
-        domBurst(layer, 66, 42, crit ? "#ffd700" : "#ff6688", crit ? 22 : 12);
-        if (hit?.enemyDefeated) {
-          setTimeout(() => handleWin(hit.goldWin, hit.leveled), 650);
-        } else {
-          setTimeout(() => {
-            flowLock.current = false;
-            nextQuestion();
-          }, 800);
-        }
-      };
-
-      if (BattleFX.ok) BattleFX.attack("player", { crit }, doHit);
-      else doHit();
-    } else {
-      setLockedOpts(true);
-      if (q) {
-        setOptState((s) => ({
-          ...s,
-          [q.ans]: "reveal",
-        }));
-      }
-      if (lastAnswer.timedOut) {
-        AudioEngine.sfx("timeout");
-        spawnFxText(layer, 50, 30, "超时！", "#ff8800");
-      } else {
-        AudioEngine.sfx("wrong");
-      }
-      if (BattleFX.ok) BattleFX.comboAura(0);
-      setTimeout(
-        () => doEnemyAttack(),
-        lastAnswer.timedOut ? 500 : 750,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastAnswer]);
+  }, [battlePhase, battleLocked, questionId, tickTimer]);
 
   function handleWin(goldWin: number, leveled: number) {
     const layer = fxLayerRef.current;
@@ -257,7 +179,7 @@ export default function BattleScreen() {
       spawnDmg(layer, 28, 55, `-${res.dmg}`, "#ff0044");
       domBurst(layer, 28, 60, "#ff0044", 12);
       if (res.fainted) {
-        setTimeout(() => handleFaint(res.wiped), 650);
+        setTimeout(handleFaint, 650);
       } else {
         setTimeout(() => {
           flowLock.current = false;
@@ -269,7 +191,7 @@ export default function BattleScreen() {
     else doHit();
   }
 
-  function handleFaint(_wipedAtImpact: boolean) {
+  function handleFaint() {
     const layer = fxLayerRef.current;
     const r0 = useGameStore.getState().run;
     if (!r0) return;
@@ -293,20 +215,74 @@ export default function BattleScreen() {
     if (BattleFX.ok) BattleFX.ko("player", after);
     else after();
   }
+  // Process answer outcome → combat FX
+  useEffect(() => {
+    if (!lastAnswer || !battle || !run) return;
+    if (PROCESSED_ANSWER_IDS.has(lastAnswer.id)) return;
+    if (processedAnswer.current === lastAnswer) return;
+    PROCESSED_ANSWER_IDS.add(lastAnswer.id);
+    if (PROCESSED_ANSWER_IDS.size > PROCESSED_ANSWER_CAP) {
+      // 简单裁剪：清空后只保留本次 id（战斗跨度内 id 单调递增，旧 id 无意义）
+      PROCESSED_ANSWER_IDS.clear();
+      PROCESSED_ANSWER_IDS.add(lastAnswer.id);
+    }
+    processedAnswer.current = lastAnswer;
+    if (flowLock.current) return;
+    flowLock.current = true;
+
+    const layer = fxLayerRef.current;
+
+    if (lastAnswer.correct) {
+      const { dmg, crit, fast } = lastAnswer;
+      AudioEngine.sfx("correct");
+      setTimeout(() => AudioEngine.sfx("coin"), 250);
+      if (BattleFX.ok) BattleFX.comboAura(run.combo);
+
+      // 与原版一致：动画命中帧再扣血 / 结算胜利
+      const doHit = () => {
+        const hit = commitPlayerHit(dmg);
+        AudioEngine.sfx(crit ? "crit" : "hit");
+        if (crit) shakeScreen();
+        spawnDmg(layer, 66, 38, `-${dmg}`, crit ? "#ffd700" : "#ff6688", crit);
+        if (crit) spawnFxText(layer, 66, 30, "暴击！", "#ffd700");
+        if (fast) spawnFxText(layer, 30, 55, "快速作答 +1", "#00f0ff");
+        domBurst(layer, 66, 42, crit ? "#ffd700" : "#ff6688", crit ? 22 : 12);
+        if (hit?.enemyDefeated) {
+          setTimeout(() => handleWin(hit.goldWin, hit.leveled), 650);
+        } else {
+          setTimeout(() => {
+            flowLock.current = false;
+            nextQuestion();
+          }, 800);
+        }
+      };
+
+      if (BattleFX.ok) BattleFX.attack("player", { crit }, doHit);
+      else doHit();
+    } else {
+      if (lastAnswer.timedOut) {
+        AudioEngine.sfx("timeout");
+        spawnFxText(layer, 50, 30, "超时！", "#ff8800");
+      } else {
+        AudioEngine.sfx("wrong");
+      }
+      if (BattleFX.ok) BattleFX.comboAura(0);
+      setTimeout(doEnemyAttack, lastAnswer.timedOut ? 500 : 750);
+    }
+    // The answer id is the event boundary; combat callbacks intentionally read that render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastAnswer]);
 
   function onAnswer(idx: number) {
-    if (!battle || battle.locked || lockedOpts) return;
+    if (!battle || battle.locked) return;
     const res = answer(idx);
     if (!res) return;
-    if (res.correct) {
-      setOptState({ [idx]: "correct" });
-    } else {
-      setOptState({
-        [idx]: "wrong",
-        [res.revealAns]: "reveal",
-      });
-    }
-    setLockedOpts(true);
+    setOptState({
+      questionId: battle.q?.id ?? null,
+      values: res.correct
+        ? { [idx]: "correct" }
+        : { [idx]: "wrong", [res.revealAns]: "reveal" },
+    });
   }
 
   function onSwitch(i: number) {
@@ -328,7 +304,7 @@ export default function BattleScreen() {
   }
 
   function onPotion() {
-    const ok = useBattlePotion();
+    const ok = consumeBattlePotion();
     if (!ok) return;
     AudioEngine.sfx("heal");
     if (BattleFX.ok) BattleFX.heal("player");
@@ -377,7 +353,7 @@ export default function BattleScreen() {
             <div
               className="combo-badge"
               id="combo-badge"
-              key={comboBump}
+              key={`${run.combo}-${lastAnswer?.id ?? 0}`}
             >
               COMBO ×{run.combo}
             </div>
@@ -482,12 +458,18 @@ export default function BattleScreen() {
             {battle.q?.q ?? ""}
           </div>
           <div
-            className={"q-opts" + (lockedOpts ? " locked" : "")}
+            className={"q-opts" + (battle.locked ? " locked" : "")}
             id="q-opts"
           >
             {battle.q?.opts.map((opt, i) => {
               const text = opt.replace(/^[A-E]\.\s*/, "");
-              const st = optState[i];
+              const localState =
+                optState.questionId === battle.q?.id
+                  ? optState.values[i]
+                  : undefined;
+              const revealed =
+                lastAnswer && !lastAnswer.correct && i === lastAnswer.revealAns;
+              const st = localState ?? (revealed ? "reveal" : undefined);
               return (
                 <button
                   key={i}

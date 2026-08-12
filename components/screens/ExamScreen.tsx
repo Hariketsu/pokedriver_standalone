@@ -33,8 +33,9 @@ export default function ExamScreen() {
 
   const remaining = session?.phase === "live" ? examRemainingMs(session, now) : 0;
   const answered = session ? countAnswered(session) : 0;
-  const sessionRef = useRef(session);
-  sessionRef.current = session;
+  const sessionRef = useRef<ExamSession | null>(null);
+  const sessionPhase = session?.phase;
+  const sessionEndsAt = session?.endsAt;
 
   const finishExam = useCallback((timedOut: boolean) => {
     const sess = sessionRef.current;
@@ -54,20 +55,25 @@ export default function ExamScreen() {
     if (score >= EXAM_PASS_SCORE) AudioEngine.sfx("fanfare");
     else AudioEngine.sfx("defeat");
 
-    setResultWrongs(wrongs);
-    setConfirmSubmit(false);
-    setSession({
+    const resultSession: ExamSession = {
       ...sess,
       phase: "result",
       score,
       timedOut,
       submittedAt: Date.now(),
-    });
+    };
+    sessionRef.current = resultSession;
+    setResultWrongs(wrongs);
+    setConfirmSubmit(false);
+    setSession(resultSession);
   }, []);
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   // 倒计时 tick + 超时自动交卷（读 ref，避免答案更新后闭包过期）
   useEffect(() => {
-    if (!session || session.phase !== "live") return;
+    if (sessionPhase !== "live") return;
     const id = window.setInterval(() => {
       const t = Date.now();
       setNow(t);
@@ -77,7 +83,7 @@ export default function ExamScreen() {
       }
     }, 250);
     return () => window.clearInterval(id);
-  }, [session?.phase, session?.endsAt, finishExam]);
+  }, [sessionPhase, sessionEndsAt, finishExam]);
 
   function startExam() {
     if (!bankOk) return;
@@ -86,6 +92,7 @@ export default function ExamScreen() {
     setResultWrongs([]);
     const s = createExamSession(QUESTIONS);
     if (!s) return;
+    sessionRef.current = s;
     setSession(s);
     setNow(Date.now());
   }
@@ -147,7 +154,7 @@ export default function ExamScreen() {
     if (!session || session.phase !== "result") return "";
     const end = session.timedOut
       ? session.endsAt
-      : (session.submittedAt ?? Date.now());
+      : session.submittedAt!;
     const ms = Math.min(
       Math.max(0, end - session.startedAt),
       session.endsAt - session.startedAt,

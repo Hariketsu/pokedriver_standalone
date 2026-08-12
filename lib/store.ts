@@ -17,7 +17,7 @@ import {
   recordCorrectAnswer,
   recordWrongAnswer,
   tryCapture,
-  usePotion,
+  usePotion as applyPotion,
 } from "./battle";
 import {
   applyTreasureRewards,
@@ -990,7 +990,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const run0 = get().run;
     if (!battle0 || !run0 || battle0.phase === "won") return false;
     const run = cloneRun(run0);
-    const res = usePotion(run);
+    const res = applyPotion(run);
     if (!res.ok) {
       if (res.reason === "full_hp") get().showToast("HP 已满");
       return false;

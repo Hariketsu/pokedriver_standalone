@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGameStore } from "@/lib/store";
 import { AudioEngine } from "@/lib/audio";
 import Icon from "@/components/ui/Icon";
@@ -18,28 +18,20 @@ export default function TitleScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
   const continueRun = useGameStore((s) => s.continueRun);
   const openModal = useGameStore((s) => s.openModal);
-  const [saveExists, setSaveExists] = useState(() =>
-    useGameStore.getState().hasSave(),
-  );
-  const [saveInfo, setSaveInfo] = useState<{
-    floor: number;
-    team: number;
-    gold: number;
-  } | null>(null);
-
-  useEffect(() => {
-    setSaveExists(hasSave());
+  const [saveSnapshot] = useState(() => {
     const run = loadRun();
-    setSaveInfo(
-      run
+    return {
+      saveExists: !!run,
+      saveInfo: run
         ? {
             floor: run.floorsCleared + 1,
             team: run.team.length,
             gold: run.gold,
           }
         : null,
-    );
-  }, [hasSave, loadRun, meta]);
+    };
+  });
+  const { saveExists, saveInfo } = saveSnapshot;
 
   const caught = Object.values(meta.dex).filter((d) => d.caught > 0).length;
   const wrongCount = Object.keys(meta.wrongQ).length;

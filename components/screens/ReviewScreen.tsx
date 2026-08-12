@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { QUESTIONS } from "@/data";
 import { useGameStore } from "@/lib/store";
 import { clamp } from "@/lib/formulas";
@@ -43,14 +43,6 @@ export default function ReviewScreen() {
   }, [wrongOnly, search, meta.wrongQ]);
 
   const pages = Math.max(1, Math.ceil(list.length / REV_PAGE));
-  // 筛选变化时回到第一页
-  useEffect(() => {
-    setPage(0);
-  }, [wrongOnly, search]);
-  // wrongQ 收缩导致 pages 变少时，把 page 夹回合法范围（与 ref revPage=clamp 后 prev/next 一致）
-  useEffect(() => {
-    setPage((p) => clamp(p, 0, pages - 1));
-  }, [pages]);
   const revPage = clamp(page, 0, pages - 1);
   const slice = list.slice(revPage * REV_PAGE, revPage * REV_PAGE + REV_PAGE);
 
