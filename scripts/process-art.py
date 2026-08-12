@@ -25,8 +25,9 @@ from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
 ART = ROOT / "public" / "art"
-GPT_RAW = ART / "gpt-image-2-gen-raw"
-KIMI_RAW = ART / "kimi-gen-raw"
+SCRATCH = ROOT / "art-scratch"
+GPT_RAW = SCRATCH / "gpt-image-2-gen-raw"
+KIMI_RAW = SCRATCH / "kimi-gen-raw"
 
 # uuid prefix -> (target name, key color, max dimension after trim)
 GPT_MAP = {
@@ -134,8 +135,8 @@ def archive_kimi() -> None:
         print(f"archive kimi-gen-raw/{f.name}")
 
 
-CUTOUT_DIR = ART / "gpt-cutout-homepage"
-CUTOUT2_DIR = ART / "gpt-cutout-homepage-2"
+CUTOUT_DIR = SCRATCH / "gpt-cutout-homepage"
+CUTOUT2_DIR = SCRATCH / "gpt-cutout-homepage-2"
 
 # source filename prefix -> (target, keep mode)
 # "largest"  = keep only the biggest connected component (subject; kills stray beams)
@@ -220,13 +221,13 @@ def process_cutouts2() -> None:
 
 def process_wide_bg() -> None:
     """Landscape outpainted hero for desktop; copied verbatim (no keying)."""
-    src = ART / "bg-16-9-raw.png"
+    src = SCRATCH / "bg-16-9-raw.png"
     Image.open(src).convert("RGB").save(ART / "bg-16-9.png")
     print(f"bg-16-9        <- {src.name} {Image.open(src).size}")
 
 
-SHEET_DIR = ART / "gpt-gen-raw-0811"
-SHEET_DIR2 = ART / "gpt-gen-raw-8011-2"
+SHEET_DIR = SCRATCH / "gpt-gen-raw-0811"
+SHEET_DIR2 = SCRATCH / "gpt-gen-raw-8011-2"
 SHEET_OUT = ART / "ui"
 
 # (dir, file, cols, rows, cell names row-major; None = intentionally blank cell)
